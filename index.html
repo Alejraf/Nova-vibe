@@ -8,14 +8,44 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="logo.png" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .view-hidden {
+      display: none !important;
+    }
+    .btn-back-catalog {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-back-catalog:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    body.modo-reproductor > div:not(.app-container),
+    body.modo-reproductor > iframe,
+    body.modo-reproductor [id*="12280257"] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
-    <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
         <img src="logo.png" alt="Logo Vibra" class="brand-logo" />
@@ -30,143 +60,178 @@
       </div>
     </header>
 
-    <!-- PROGRESS & CONTINUE CARD -->
-    <section class="card progress-card">
-      <button id="btn-continue-last" class="btn-primary-full" onclick="continueLastVideo()">
-        ▶ <span id="last-video-label" data-i18n="continue_default">Continuar: Violão do zero - Aula 1</span>
-      </button>
-
-      <div class="goal-row">
-        <div class="goal-stats">
-          <div class="minutes-text">
-            <span data-i18n="today">Hoje</span>: <strong id="today-minutes">0</strong> / <span id="goal-target">10</span> min
-          </div>
-          <div class="streak-text">
-            🔥 <span data-i18n="streak">Sequência</span>: <strong id="streak-days">1</strong> <span data-i18n="day_unit">dia</span>
-          </div>
-        </div>
-        <button class="btn-outline-pill" onclick="changeDailyGoal()">
-          <span data-i18n="goal">Meta</span>: <span id="goal-btn-val">10</span> min
+    <main id="vista-catalogo">
+      <section class="card progress-card">
+        <button id="btn-continue-last" class="btn-primary-full" onclick="continueLastVideo()">
+          ▶ <span id="last-video-label" data-i18n="continue_default">Continuar: Violão do zero - Aula 1</span>
         </button>
-      </div>
 
-      <div class="progress-bar-bg">
-        <div id="daily-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
-      </div>
-    </section>
-
-    <!-- MONETAG NON-INTRUSIVE TOP BANNER SLOT -->
-    <aside class="ad-banner-slot" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-top-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU CÓDIGO DE BANNER DE MONETAG (320x50 / Responsive) -->
-        <span class="ad-placeholder" data-i18n="ad_space">Espaço reservado para Banner Monetag (320x50)</span>
-      </div>
-    </aside>
-
-    <!-- COURSES SECTION -->
-    <section class="courses-section">
-      <div class="section-header">
-        <h2 data-i18n="routes_title">Rotas para começar</h2>
-        <p data-i18n="routes_subtitle">Escolha um tema e comece sem procurar nada.</p>
-      </div>
-
-      <!-- CATEGORY TABS -->
-      <div class="categories-scroll" id="category-tabs">
-        <!-- Populated dynamically by JS -->
-      </div>
-
-      <!-- COURSE CARDS GRID -->
-      <div class="courses-grid" id="courses-grid">
-        <!-- Populated dynamically by JS -->
-      </div>
-    </section>
-
-    <!-- YOUTUBE LINK INPUT & PLAYER SECTION -->
-    <section class="card player-section" id="player-section">
-      <div class="link-input-group">
-        <input 
-          type="text" 
-          id="youtube-url-input" 
-          placeholder="Cole um link do YouTube aqui..." 
-          data-i18n-placeholder="paste_placeholder"
-        />
-        <button class="btn-play-link" onclick="loadCustomYouTubeLink()" data-i18n="play_btn">Abrir</button>
-      </div>
-
-      <!-- PLAYER WRAPPER -->
-      <div class="video-wrapper" id="video-wrapper">
-        <div class="empty-player-msg" id="empty-player-msg">
-          <p data-i18n="player_empty">Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.</p>
-        </div>
-        <div id="youtube-player"></div>
-      </div>
-
-      <!-- ACTIVE COURSE LESSON LIST & NOTES -->
-      <div id="active-workspace" class="active-workspace hidden">
-        <div class="workspace-header">
-          <h3 id="active-video-title">Título del video</h3>
-          <button id="btn-mark-complete" class="btn-complete" onclick="toggleCurrentLessonComplete()">
-            ✓ <span data-i18n="mark_done">Concluir aula</span>
+        <div class="goal-row">
+          <div class="goal-stats">
+            <div class="minutes-text">
+              <span data-i18n="today">Hoje</span>: <strong id="today-minutes">0</strong> / <span id="goal-target">10</span> min
+            </div>
+            <div class="streak-text">
+              🔥 <span data-i18n="streak">Sequência</span>: <strong id="streak-days">1</strong> <span id="day_unit">dia</span>
+            </div>
+          </div>
+          <button class="btn-outline-pill" onclick="changeDailyGoal()">
+            <span data-i18n="goal">Meta</span>: <span id="goal-btn-val">10</span> min
           </button>
         </div>
 
-        <!-- LESSON PLAYLIST FOR SELECTED COURSE -->
-        <div id="course-lessons-box" class="lessons-box hidden">
-          <h4 data-i18n="course_modules">Módulos do Curso</h4>
-          <ul id="lessons-list" class="lessons-list"></ul>
+        <div class="progress-bar-bg">
+          <div id="daily-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+      </section>
+
+      <section class="courses-section">
+        <div class="section-header">
+          <h2 data-i18n="routes_title">Rotas para começar</h2>
+          <p data-i18n="routes_subtitle">Escolha um tema e comece sem procurar nada.</p>
         </div>
 
-        <!-- PERSONAL STUDY NOTES -->
-        <div class="notes-box">
-          <div class="notes-header">
-            <h4 data-i18n="my_notes">Minhas anotações</h4>
-            <span id="note-saved-badge" class="saved-badge hidden" data-i18n="saved">Salvo!</span>
+        <div class="categories-scroll" id="category-tabs"></div>
+
+        <div class="courses-grid" id="courses-grid"></div>
+      </section>
+
+      <section class="card" style="margin-bottom: 16px;">
+        <div class="link-input-group">
+          <input 
+            type="text" 
+            id="youtube-url-input" 
+            placeholder="Cole um link do YouTube aqui..." 
+            data-i18n-placeholder="paste_placeholder"
+          />
+          <button class="btn-play-link" onclick="loadCustomYouTubeLink()" data-i18n="play_btn">Abrir</button>
+        </div>
+      </section>
+
+      <section class="card search-card">
+        <h3 data-i18n="search_yt_title">Buscar aulas no YouTube</h3>
+        <div class="link-input-group">
+          <input 
+            type="text" 
+            id="yt-search-query" 
+            placeholder="Ex: Curso de eletrônica básica..." 
+            data-i18n-placeholder="search_placeholder"
+          />
+          <button class="btn-play-link" onclick="searchYouTubeVideos()" data-i18n="search_btn">Buscar</button>
+        </div>
+        <div id="search-results-list" class="search-results"></div>
+      </section>
+    </main>
+
+    <section id="vista-reproductor" class="view-hidden">
+      <button class="btn-back-catalog" onclick="voltarParaCatalogo()">
+        ← <span id="btn-back-text">Voltar aos cursos e busca</span>
+      </button>
+
+      <div class="card player-section" id="player-section">
+        <div class="video-wrapper" id="video-wrapper">
+          <div class="empty-player-msg" id="empty-player-msg">
+            <p data-i18n="player_empty">Carregando aula...</p>
           </div>
-          <textarea 
-            id="video-notes-area" 
-            rows="3" 
-            placeholder="Escreva pontos importantes desta aula..."
-            data-i18n-placeholder="notes_placeholder"
-            oninput="saveCurrentNote()"
-          ></textarea>
+          <div id="youtube-player"></div>
+        </div>
+
+        <div id="active-workspace" class="active-workspace hidden">
+          <div class="workspace-header">
+            <h3 id="active-video-title">Título del video</h3>
+            <button id="btn-mark-complete" class="btn-complete" onclick="toggleCurrentLessonComplete()">
+              ✓ <span data-i18n="mark_done">Concluir aula</span>
+            </button>
+          </div>
+
+          <div id="course-lessons-box" class="lessons-box hidden">
+            <h4 data-i18n="course_modules">Módulos do Curso</h4>
+            <ul id="lessons-list" class="lessons-list"></ul>
+          </div>
+
+          <div class="notes-box">
+            <div class="notes-header">
+              <h4 data-i18n="my_notes">Minhas anotações</h4>
+              <span id="note-saved-badge" class="saved-badge hidden" data-i18n="saved">Salvo!</span>
+            </div>
+            <textarea 
+              id="video-notes-area" 
+              rows="3" 
+              placeholder="Escreva pontos importantes desta aula..."
+              data-i18n-placeholder="notes_placeholder"
+              oninput="saveCurrentNote()"
+            ></textarea>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- MONETAG NON-INTRUSIVE BOTTOM BANNER SLOT -->
-    <aside class="ad-banner-slot bottom-ad" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-bottom-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU SEGUNDO BANNER DE MONETAG (300x50 / Native Banner) -->
-        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espaço reservado para Banner Monetag Inferior</span>
-      </div>
-    </aside>
-
-    <!-- OPTIONAL YOUTUBE API SEARCH DRAWER -->
-    <section class="card search-card">
-      <h3 data-i18n="search_yt_title">Buscar aulas no YouTube</h3>
-      <div class="link-input-group">
-        <input 
-          type="text" 
-          id="yt-search-query" 
-          placeholder="Ex: Curso de eletrônica básica..." 
-          data-i18n-placeholder="search_placeholder"
-        />
-        <button class="btn-play-link" onclick="searchYouTubeVideos()" data-i18n="search_btn">Buscar</button>
-      </div>
-      <div id="search-results-list" class="search-results"></div>
-    </section>
-
-    <!-- FOOTER WITH TERMS & PRIVACY LINK -->
     <footer class="app-footer">
       <a href="terminos.html" data-i18n="terms_link">Termos de Uso & Política de Privacidade</a>
     </footer>
   </div>
 
-  <!-- YouTube IFrame API (100% Oficial y conforme a términos de YouTube) -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="courses-data.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    let monetagCargado = false;
+    let enModoReproductor = false;
+
+    function cargarMonetagEnCatalogo() {
+      if (monetagCargado || enModoReproductor) return;
+      monetagCargado = true;
+      (function(s){
+        s.id = 'monetag-script-12280257';
+        s.dataset.zone = '12280257';
+        s.src = 'https://nap5k.com/tag.min.js';
+      })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    }
+
+    function limpiarMonetag() {
+      const scriptTag = document.getElementById('monetag-script-12280257');
+      if (scriptTag) scriptTag.remove();
+
+      document.querySelectorAll('script[src*="nap5k.com"], script[data-zone="12280257"]').forEach(el => el.remove());
+
+      document.querySelectorAll('body > div:not(.app-container), body > iframe').forEach(el => el.remove());
+    }
+
+    function abrirVistaReproductor() {
+      if (enModoReproductor) return;
+      enModoReproductor = true;
+
+      document.body.classList.add('modo-reproductor');
+      document.getElementById('vista-catalogo').classList.add('view-hidden');
+      document.getElementById('vista-reproductor').classList.remove('view-hidden');
+
+      limpiarMonetag();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function voltarParaCatalogo() {
+      window.location.reload();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarMonetagEnCatalogo();
+
+      const workspace = document.getElementById('active-workspace');
+      const playerContainer = document.getElementById('youtube-player');
+
+      const observer = new MutationObserver(() => {
+        const isWorkspaceActive = !workspace.classList.contains('hidden');
+        const hasIframe = playerContainer.tagName === 'IFRAME' || playerContainer.querySelector('iframe');
+        
+        if (isWorkspaceActive || hasIframe) {
+          abrirVistaReproductor();
+        }
+      });
+
+      observer.observe(workspace, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(document.getElementById('video-wrapper'), { childList: true, subtree: true });
+    });
+  </script>
 </body>
 </html>
