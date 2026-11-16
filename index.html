@@ -34,18 +34,28 @@
     .btn-back-catalog:hover {
       background: rgba(255, 255, 255, 0.18);
     }
-    body.modo-reproductor > div:not(.app-container),
-    body.modo-reproductor > iframe,
-    body.modo-reproductor [id*="12280257"] {
+
+    /* BLOQUEO TOTAL POR CSS EN MODO REPRODUCTOR */
+    html.modo-reproductor > *:not(head):not(body),
+    body.modo-reproductor > *:not(.app-container):not(script),
+    body.modo-reproductor [style*="position: fixed"],
+    body.modo-reproductor [style*="position:fixed"],
+    body.modo-reproductor [style*="z-index: 2147483647"],
+    body.modo-reproductor [id*="12280257"],
+    body.modo-reproductor [class*="12280257"] {
       display: none !important;
       visibility: hidden !important;
       opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
       pointer-events: none !important;
+      z-index: -9999 !important;
     }
   </style>
 </head>
 <body>
   <div class="app-container">
+    <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
         <img src="logo.png" alt="Logo Vibra" class="brand-logo" />
@@ -60,6 +70,9 @@
       </div>
     </header>
 
+    <!-- ========================================== -->
+    <!-- TELA 1: CATÁLOGO, BUSCADOR E PUBLICIDADE   -->
+    <!-- ========================================== -->
     <main id="vista-catalogo">
       <section class="card progress-card">
         <button id="btn-continue-last" class="btn-primary-full" onclick="continueLastVideo()">
@@ -90,9 +103,7 @@
           <h2 data-i18n="routes_title">Rotas para começar</h2>
           <p data-i18n="routes_subtitle">Escolha um tema e comece sem procurar nada.</p>
         </div>
-
         <div class="categories-scroll" id="category-tabs"></div>
-
         <div class="courses-grid" id="courses-grid"></div>
       </section>
 
@@ -123,6 +134,9 @@
       </section>
     </main>
 
+    <!-- ========================================== -->
+    <!-- TELA 2: REPRODUTOR LIMPO (SEM ANÚNCIOS)    -->
+    <!-- ========================================== -->
     <section id="vista-reproductor" class="view-hidden">
       <button class="btn-back-catalog" onclick="voltarParaCatalogo()">
         ← <span id="btn-back-text">Voltar aos cursos e busca</span>
@@ -175,9 +189,11 @@
   <script src="courses-data.js"></script>
   <script src="app.js"></script>
 
+  <!-- CONTROLE DE TELAS E ESCUDO ANTI-ANÚNCIOS NO REPRODUTOR -->
   <script>
     let monetagCargado = false;
     let enModoReproductor = false;
+    let escudoAnuncios = null;
 
     function cargarMonetagEnCatalogo() {
       if (monetagCargado || enModoReproductor) return;
@@ -189,24 +205,50 @@
       })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
     }
 
-    function limpiarMonetag() {
-      const scriptTag = document.getElementById('monetag-script-12280257');
-      if (scriptTag) scriptTag.remove();
+    function destruirCualquierAnuncio() {
+      document.querySelectorAll('script').forEach(sc => {
+        const src = (sc.src || '').toLowerCase();
+        if (src.includes('nap5k') || src.includes('monetag') || sc.dataset.zone === '12280257') {
+          sc.remove();
+        }
+      });
 
-      document.querySelectorAll('script[src*="nap5k.com"], script[data-zone="12280257"]').forEach(el => el.remove());
+      document.querySelectorAll('body > *:not(.app-container):not(script), html > *:not(head):not(body)').forEach(el => {
+        el.remove();
+      });
 
-      document.querySelectorAll('body > div:not(.app-container), body > iframe').forEach(el => el.remove());
+      document.querySelectorAll('.app-container div, .app-container aside, .app-container iframe').forEach(el => {
+        if (el.id === 'youtube-player' || el.closest('#youtube-player')) return;
+        const style = window.getComputedStyle(el);
+        if (style.position === 'fixed' || parseInt(style.zIndex) > 999) {
+          el.remove();
+        }
+      });
+    }
+
+    function activarEscudoContinuo() {
+      destruirCualquierAnuncio();
+
+      if (!escudoAnuncios) {
+        escudoAnuncios = new MutationObserver(() => {
+          if (enModoReproductor) {
+            destruirCualquierAnuncio();
+          }
+        });
+        escudoAnuncios.observe(document.documentElement, { childList: true, subtree: true });
+      }
     }
 
     function abrirVistaReproductor() {
       if (enModoReproductor) return;
       enModoReproductor = true;
 
+      document.documentElement.classList.add('modo-reproductor');
       document.body.classList.add('modo-reproductor');
       document.getElementById('vista-catalogo').classList.add('view-hidden');
       document.getElementById('vista-reproductor').classList.remove('view-hidden');
 
-      limpiarMonetag();
+      activarEscudoContinuo();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
