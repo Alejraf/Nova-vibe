@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#140e24" />
   <title>Vibra - Aprenda com vídeos</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="logo.png" />
   <link rel="stylesheet" href="styles.css" />
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +18,7 @@
     <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
-        <div class="brand-logo">🎧</div>
+        <img src="logo.png" alt="Logo Vibra" class="brand-logo" />
         <div class="brand-info">
           <h1>Vibra</h1>
           <p data-i18n="subtitle">Aprenda com vídeos: rotas, notas e progresso</p>
@@ -59,7 +60,7 @@
       <div class="ad-badge">AD</div>
       <div id="monetag-top-banner" class="ad-container">
         <!-- PEGA AQUÍ TU CÓDIGO DE BANNER DE MONETAG (320x50 / Responsive) -->
-        <span class="ad-placeholder" data-i18n="ad_space">Espacio reservado para Banner Monetag (320x50)</span>
+        <span class="ad-placeholder" data-i18n="ad_space">Espaço reservado para Banner Monetag (320x50)</span>
       </div>
     </aside>
 
@@ -101,7 +102,7 @@
         <div id="youtube-player"></div>
       </div>
 
-      <!-- ACTIVE COURSE LESSON LIST & NOTES (Visible when a course or video is active) -->
+      <!-- ACTIVE COURSE LESSON LIST & NOTES -->
       <div id="active-workspace" class="active-workspace hidden">
         <div class="workspace-header">
           <h3 id="active-video-title">Título del video</h3>
@@ -138,7 +139,7 @@
       <div class="ad-badge">AD</div>
       <div id="monetag-bottom-banner" class="ad-container">
         <!-- PEGA AQUÍ TU SEGUNDO BANNER DE MONETAG (300x50 / Native Banner) -->
-        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espacio reservado para Banner Monetag Inferior</span>
+        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espaço reservado para Banner Monetag Inferior</span>
       </div>
     </aside>
 
@@ -156,6 +157,11 @@
       </div>
       <div id="search-results-list" class="search-results"></div>
     </section>
+
+    <!-- FOOTER WITH TERMS & PRIVACY LINK -->
+    <footer class="app-footer">
+      <a href="terminos.html" data-i18n="terms_link">Termos de Uso & Política de Privacidade</a>
+    </footer>
   </div>
 
   <!-- YouTube IFrame API (100% Oficial y conforme a términos de YouTube) -->

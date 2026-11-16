@@ -3,7 +3,6 @@
 // =========================================================================
 
 // Opcional: Pega aquí tu API Key de YouTube Data API v3 si deseas habilitar el buscador inferior.
-// Si se deja vacía, el buscador redirige de forma segura o sugiere pegar enlace directo.
 const YOUTUBE_DATA_API_KEY = "";
 
 const I18N = {
@@ -36,7 +35,8 @@ const I18N = {
     search_placeholder: "Ex: Curso de eletrônica básica...",
     search_btn: "Buscar",
     invalid_link: "Por favor, cole um link válido do YouTube.",
-    goal_prompt: "Defina sua meta diária em minutos (ex: 10, 15, 30):"
+    goal_prompt: "Defina sua meta diária em minutos (ex: 10, 15, 30):",
+    terms_link: "Termos de Uso & Política de Privacidade"
   },
   es: {
     subtitle: "Aprende con videos: rutas, notas y progreso",
@@ -67,7 +67,8 @@ const I18N = {
     search_placeholder: "Ej: Curso de electrónica básica...",
     search_btn: "Buscar",
     invalid_link: "Por favor, pega un enlace válido de YouTube.",
-    goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):"
+    goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):",
+    terms_link: "Términos de Uso y Política de Privacidad"
   }
 };
 
@@ -79,12 +80,12 @@ let appState = {
   todayMinutes: 0,
   lastActiveDate: new Date().toISOString().slice(0, 10),
   streakDays: 1,
-  completedLessons: [], // array de lessonId o videoId
-  notes: {},            // { videoId: "texto..." }
+  completedLessons: [],
+  notes: {},
   lastPlayed: {
     courseId: 'violao-zero',
     lessonId: 'v1',
-    videoId: '1_O807H_t4U',
+    videoId: 'ZI2h7A1NM4A',
     titlePt: 'Violão do zero - Aula 1',
     titleEs: 'Guitarra desde cero - Clase 1'
   }
@@ -97,7 +98,6 @@ let currentLessonId = null;
 let currentVideoId = null;
 let watchTimerInterval = null;
 
-// Inicialización al cargar DOM
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   checkDailyReset();
@@ -107,9 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgressUI();
 });
 
-// Cargar y guardar estado
 function loadState() {
-  const saved = localStorage.getItem('vibra_app_state_v1');
+  const saved = localStorage.getItem('vibra_app_state_v2');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -121,7 +120,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem('vibra_app_state_v1', JSON.stringify(appState));
+  localStorage.setItem('vibra_app_state_v2', JSON.stringify(appState));
 }
 
 function checkDailyReset() {
@@ -139,7 +138,6 @@ function checkDailyReset() {
   }
 }
 
-// Internacionalización (ES / PT)
 function setLanguage(lang) {
   appState.lang = lang;
   saveState();
@@ -169,7 +167,6 @@ function applyLanguage(lang) {
   });
 }
 
-// Renderizar pestañas de categorías
 function renderCategories() {
   const container = document.getElementById('category-tabs');
   container.innerHTML = '';
@@ -186,7 +183,6 @@ function renderCategories() {
   });
 }
 
-// Renderizar tarjetas de cursos
 function renderCourses() {
   const grid = document.getElementById('courses-grid');
   grid.innerHTML = '';
@@ -218,7 +214,6 @@ function renderCourses() {
   });
 }
 
-// Abrir un curso y reproducir la primera lección pendiente
 function openCourse(courseId) {
   const course = COURSES_DB.find(c => c.id === courseId);
   if (!course) return;
@@ -261,7 +256,6 @@ function continueLastVideo() {
   }
 }
 
-// Renderizar lista de lecciones del curso activo
 function renderCourseLessons(courseId) {
   const course = COURSES_DB.find(c => c.id === courseId);
   const box = document.getElementById('course-lessons-box');
@@ -289,7 +283,6 @@ function renderCourseLessons(courseId) {
   });
 }
 
-// YouTube IFrame API Callbacks (Cumple 100% con políticas de YouTube)
 function onYouTubeIframeAPIReady() {
   ytApiReady = true;
 }
@@ -306,11 +299,9 @@ function loadYouTubeVideo(videoId, title, isCourseLesson) {
   document.getElementById('active-workspace').classList.remove('hidden');
   document.getElementById('active-video-title').textContent = title;
 
-  // Cargar notas guardadas para este video
   document.getElementById('video-notes-area').value = appState.notes[videoId] || '';
   updateCompleteButtonUI();
 
-  // Desplazar suavemente hacia el reproductor
   document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
@@ -328,14 +319,12 @@ function loadYouTubeVideo(videoId, title, isCourseLesson) {
       }
     });
   } else {
-    // Fallback iframe estándar si la API aún está cargando
     const wrapper = document.getElementById('video-wrapper');
     wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
   }
 }
 
 function onPlayerStateChange(event) {
-  // YT.PlayerState.PLAYING === 1
   if (event.data === 1) {
     startWatchTimer();
   } else {
@@ -349,7 +338,7 @@ function startWatchTimer() {
     appState.todayMinutes += 1;
     saveState();
     updateProgressUI();
-  }, 60000); // Suma 1 minuto real de estudio cada 60 segundos reproduciendo
+  }, 60000);
 }
 
 function stopWatchTimer() {
@@ -359,7 +348,6 @@ function stopWatchTimer() {
   }
 }
 
-// Extraer ID de cualquier enlace de YouTube (watch, youtu.be, shorts, embed)
 function extractYouTubeId(url) {
   const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url.trim().match(regExp);
@@ -388,7 +376,6 @@ function loadCustomYouTubeLink() {
   input.value = '';
 }
 
-// Marcar lección o video como completado
 function toggleCurrentLessonComplete() {
   const targetId = currentLessonId || currentVideoId;
   if (!targetId) return;
@@ -396,7 +383,6 @@ function toggleCurrentLessonComplete() {
   const idx = appState.completedLessons.indexOf(targetId);
   if (idx === -1) {
     appState.completedLessons.push(targetId);
-    // Sumar bonus de minutos si completa manualmente una clase corta
     if (appState.todayMinutes < appState.dailyGoalMinutes) {
       appState.todayMinutes += 3;
     }
@@ -421,7 +407,6 @@ function updateCompleteButtonUI() {
   btn.innerHTML = isDone ? `✓ <span>${dict.marked_done}</span>` : `✓ <span>${dict.mark_done}</span>`;
 }
 
-// Guardar notas personales por video
 let noteTimeout = null;
 function saveCurrentNote() {
   if (!currentVideoId) return;
@@ -435,7 +420,6 @@ function saveCurrentNote() {
   noteTimeout = setTimeout(() => badge.classList.add('hidden'), 1500);
 }
 
-// Actualizar barra de progreso y meta diaria
 function updateProgressUI() {
   const dict = I18N[appState.lang];
   document.getElementById('today-minutes').textContent = appState.todayMinutes;
@@ -460,7 +444,6 @@ function changeDailyGoal() {
   }
 }
 
-// Buscador opcional usando YouTube Data API v3 oficial
 async function searchYouTubeVideos() {
   const query = document.getElementById('yt-search-query').value.trim();
   if (!query) return;
@@ -468,7 +451,6 @@ async function searchYouTubeVideos() {
   const resultsBox = document.getElementById('search-results-list');
 
   if (!YOUTUBE_DATA_API_KEY) {
-    // Si aún no configuras la API Key, abre la búsqueda en YouTube de forma externa para copiar enlace
     const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
     window.open(ytSearchUrl, '_blank', 'noopener');
     return;
