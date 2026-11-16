@@ -3,7 +3,7 @@
 // =========================================================================
 
 // Opcional: Pega aquí tu API Key de YouTube Data API v3 si deseas habilitar el buscador inferior.
-const YOUTUBE_DATA_API_KEY = "";
+const YOUTUBE_DATA_API_KEY = "AIzaSyC7jJKXG_GosP56S2xvQk-2AKp9rOoec0I";
 
 const I18N = {
   pt: {
