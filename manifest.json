@@ -1,0 +1,16 @@
+{
+  "name": "Vibra - Aprenda com vídeos",
+  "short_name": "Vibra",
+  "description": "Plataforma de cursos em vídeo, rotas de aprendizado, notas e progresso diário.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#120c22",
+  "theme_color": "#140e24",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3659/3659784.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

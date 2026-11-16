@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#140e24" />
+  <title>Vibra - Aprenda com vídeos</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">🎧</div>
+        <div class="brand-info">
+          <h1>Vibra</h1>
+          <p data-i18n="subtitle">Aprenda com vídeos: rotas, notas e progresso</p>
+        </div>
+      </div>
+      <div class="lang-switch">
+        <button id="btn-es" class="lang-btn" onclick="setLanguage('es')">ES</button>
+        <button id="btn-pt" class="lang-btn active" onclick="setLanguage('pt')">PT</button>
+      </div>
+    </header>
+
+    <!-- PROGRESS & CONTINUE CARD -->
+    <section class="card progress-card">
+      <button id="btn-continue-last" class="btn-primary-full" onclick="continueLastVideo()">
+        ▶ <span id="last-video-label" data-i18n="continue_default">Continuar: Violão do zero - Aula 1</span>
+      </button>
+
+      <div class="goal-row">
+        <div class="goal-stats">
+          <div class="minutes-text">
+            <span data-i18n="today">Hoje</span>: <strong id="today-minutes">0</strong> / <span id="goal-target">10</span> min
+          </div>
+          <div class="streak-text">
+            🔥 <span data-i18n="streak">Sequência</span>: <strong id="streak-days">1</strong> <span data-i18n="day_unit">dia</span>
+          </div>
+        </div>
+        <button class="btn-outline-pill" onclick="changeDailyGoal()">
+          <span data-i18n="goal">Meta</span>: <span id="goal-btn-val">10</span> min
+        </button>
+      </div>
+
+      <div class="progress-bar-bg">
+        <div id="daily-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+      </div>
+    </section>
+
+    <!-- MONETAG NON-INTRUSIVE TOP BANNER SLOT -->
+    <aside class="ad-banner-slot" aria-label="Publicidad">
+      <div class="ad-badge">AD</div>
+      <div id="monetag-top-banner" class="ad-container">
+        <!-- PEGA AQUÍ TU CÓDIGO DE BANNER DE MONETAG (320x50 / Responsive) -->
+        <span class="ad-placeholder" data-i18n="ad_space">Espacio reservado para Banner Monetag (320x50)</span>
+      </div>
+    </aside>
+
+    <!-- COURSES SECTION -->
+    <section class="courses-section">
+      <div class="section-header">
+        <h2 data-i18n="routes_title">Rotas para começar</h2>
+        <p data-i18n="routes_subtitle">Escolha um tema e comece sem procurar nada.</p>
+      </div>
+
+      <!-- CATEGORY TABS -->
+      <div class="categories-scroll" id="category-tabs">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- COURSE CARDS GRID -->
+      <div class="courses-grid" id="courses-grid">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- YOUTUBE LINK INPUT & PLAYER SECTION -->
+    <section class="card player-section" id="player-section">
+      <div class="link-input-group">
+        <input 
+          type="text" 
+          id="youtube-url-input" 
+          placeholder="Cole um link do YouTube aqui..." 
+          data-i18n-placeholder="paste_placeholder"
+        />
+        <button class="btn-play-link" onclick="loadCustomYouTubeLink()" data-i18n="play_btn">Abrir</button>
+      </div>
+
+      <!-- PLAYER WRAPPER -->
+      <div class="video-wrapper" id="video-wrapper">
+        <div class="empty-player-msg" id="empty-player-msg">
+          <p data-i18n="player_empty">Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.</p>
+        </div>
+        <div id="youtube-player"></div>
+      </div>
+
+      <!-- ACTIVE COURSE LESSON LIST & NOTES (Visible when a course or video is active) -->
+      <div id="active-workspace" class="active-workspace hidden">
+        <div class="workspace-header">
+          <h3 id="active-video-title">Título del video</h3>
+          <button id="btn-mark-complete" class="btn-complete" onclick="toggleCurrentLessonComplete()">
+            ✓ <span data-i18n="mark_done">Concluir aula</span>
+          </button>
+        </div>
+
+        <!-- LESSON PLAYLIST FOR SELECTED COURSE -->
+        <div id="course-lessons-box" class="lessons-box hidden">
+          <h4 data-i18n="course_modules">Módulos do Curso</h4>
+          <ul id="lessons-list" class="lessons-list"></ul>
+        </div>
+
+        <!-- PERSONAL STUDY NOTES -->
+        <div class="notes-box">
+          <div class="notes-header">
+            <h4 data-i18n="my_notes">Minhas anotações</h4>
+            <span id="note-saved-badge" class="saved-badge hidden" data-i18n="saved">Salvo!</span>
+          </div>
+          <textarea 
+            id="video-notes-area" 
+            rows="3" 
+            placeholder="Escreva pontos importantes desta aula..."
+            data-i18n-placeholder="notes_placeholder"
+            oninput="saveCurrentNote()"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- MONETAG NON-INTRUSIVE BOTTOM BANNER SLOT -->
+    <aside class="ad-banner-slot bottom-ad" aria-label="Publicidad">
+      <div class="ad-badge">AD</div>
+      <div id="monetag-bottom-banner" class="ad-container">
+        <!-- PEGA AQUÍ TU SEGUNDO BANNER DE MONETAG (300x50 / Native Banner) -->
+        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espacio reservado para Banner Monetag Inferior</span>
+      </div>
+    </aside>
+
+    <!-- OPTIONAL YOUTUBE API SEARCH DRAWER -->
+    <section class="card search-card">
+      <h3 data-i18n="search_yt_title">Buscar aulas no YouTube</h3>
+      <div class="link-input-group">
+        <input 
+          type="text" 
+          id="yt-search-query" 
+          placeholder="Ex: Curso de eletrônica básica..." 
+          data-i18n-placeholder="search_placeholder"
+        />
+        <button class="btn-play-link" onclick="searchYouTubeVideos()" data-i18n="search_btn">Buscar</button>
+      </div>
+      <div id="search-results-list" class="search-results"></div>
+    </section>
+  </div>
+
+  <!-- YouTube IFrame API (100% Oficial y conforme a términos de YouTube) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="courses-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
