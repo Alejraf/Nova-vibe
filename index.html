@@ -54,15 +54,6 @@
       </div>
     </section>
 
-    <!-- MONETAG NON-INTRUSIVE TOP BANNER SLOT -->
-    <aside class="ad-banner-slot" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-top-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU CÓDIGO DE BANNER DE MONETAG (320x50 / Responsive) -->
-        <span class="ad-placeholder" data-i18n="ad_space">Espaço reservado para Banner Monetag (320x50)</span>
-      </div>
-    </aside>
-
     <!-- COURSES SECTION -->
     <section class="courses-section">
       <div class="section-header">
@@ -77,22 +68,30 @@
       <div class="courses-grid" id="courses-grid"></div>
     </section>
 
-    <!-- YOUTUBE LINK INPUT & PLAYER SECTION -->
+    <!-- YOUTUBE SEARCH & PLAYER SECTION -->
     <section class="card player-section" id="player-section">
+      <div class="search-header-label" data-i18n="search_label">🔍 Pesquisar ou colar link do YouTube</div>
       <div class="link-input-group">
         <input 
           type="text" 
           id="youtube-url-input" 
-          placeholder="Cole um link do YouTube aqui..." 
-          data-i18n-placeholder="paste_placeholder"
+          placeholder="Pesquise um tema ou cole o link do YouTube..." 
+          data-i18n-placeholder="search_placeholder"
+          onkeypress="handleSearchKeyPress(event)"
         />
-        <button class="btn-play-link" onclick="loadCustomYouTubeLink()" data-i18n="play_btn">Abrir</button>
+        <button class="btn-play-link" onclick="executeYouTubeSearch()" data-i18n="search_btn">Buscar</button>
+      </div>
+
+      <!-- SEARCH RESULTS CONTAINER -->
+      <div id="search-results-box" class="search-results-box hidden">
+        <h4 data-i18n="search_results_title">Resultados da Pesquisa</h4>
+        <div id="search-results-list" class="search-results-list"></div>
       </div>
 
       <!-- PLAYER WRAPPER -->
       <div class="video-wrapper" id="video-wrapper">
         <div class="empty-player-msg" id="empty-player-msg">
-          <p data-i18n="player_empty">Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.</p>
+          <p data-i18n="player_empty">Escolha uma rota acima, pesquise um vídeo ou cole um link para reproduzi-lo aqui dentro.</p>
         </div>
         <div id="youtube-player"></div>
       </div>
@@ -132,15 +131,6 @@
       </div>
     </section>
 
-    <!-- MONETAG NON-INTRUSIVE BOTTOM BANNER SLOT -->
-    <aside class="ad-banner-slot bottom-ad" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-bottom-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU SEGUNDO BANNER DE MONETAG (300x50 / Native Banner) -->
-        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espaço reservado para Banner Monetag Inferior</span>
-      </div>
-    </aside>
-
     <!-- ACHIEVEMENTS & GAMIFICATION PANEL (Valor añadido para Uptodown) -->
     <section class="card achievements-card">
       <h3 data-i18n="achievements_title">🏆 Conquistas & Metas</h3>
@@ -160,7 +150,6 @@
   <script src="courses-data.js"></script>
   <script src="app.js"></script>
   <script>
-    // Registro de Service Worker para habilitar PWA instalable nativa en Android / APK
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));

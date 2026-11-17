@@ -174,40 +174,6 @@ body {
   transition: width 0.4s ease;
 }
 
-/* MONETAG NON-INTRUSIVE AD SLOTS */
-.ad-banner-slot {
-  background: rgba(29, 21, 51, 0.65);
-  border: 1px dashed rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  padding: 6px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 58px;
-  overflow: hidden;
-}
-
-.ad-badge {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.08);
-  padding: 2px 6px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.ad-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50px;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
 /* COURSES SECTION */
 .section-header h2 {
   font-size: 1.1rem;
@@ -318,7 +284,14 @@ body {
   cursor: pointer;
 }
 
-/* PLAYER & WORKSPACE */
+/* SEARCH & PLAYER */
+.search-header-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
 .link-input-group {
   display: flex;
   gap: 8px;
@@ -349,6 +322,51 @@ body {
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
+}
+
+.search-results-box {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.search-results-box h4 {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.search-result-item:hover {
+  background: rgba(244, 63, 142, 0.12);
+}
+
+.search-result-item img {
+  width: 60px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .video-wrapper {

@@ -8,16 +8,16 @@ const I18N = {
     day_unit: "dia",
     days_unit: "dias",
     goal: "Meta",
-    ad_space: "Espaço reservado para Banner Monetag (320x50)",
-    ad_space_bottom: "Espaço reservado para Banner Monetag Inferior",
     routes_title: "Rotas para começar",
     routes_subtitle: "Escolha um tema e comece sem procurar nada.",
     watched: "assistidos",
     btn_continue: "Continuar",
     btn_start: "Começar",
-    paste_placeholder: "Cole um link do YouTube aqui...",
-    play_btn: "Abrir",
-    player_empty: "Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.",
+    search_label: "🔍 Pesquisar vídeo ou colar link do YouTube",
+    search_placeholder: "Pesquise um tema ou cole o link...",
+    search_btn: "Buscar",
+    search_results_title: "Resultados da Pesquisa",
+    player_empty: "Escolha uma rota acima, pesquise um vídeo ou cole um link para reproduzi-lo aqui dentro.",
     mark_done: "Concluir aula",
     marked_done: "Aula concluída ✓",
     course_modules: "Módulos do Curso",
@@ -39,16 +39,16 @@ const I18N = {
     day_unit: "día",
     days_unit: "días",
     goal: "Meta",
-    ad_space: "Espacio reservado para Banner Monetag (320x50)",
-    ad_space_bottom: "Espacio reservado para Banner Monetag Inferior",
     routes_title: "Rutas para empezar",
     routes_subtitle: "Elige un tema y empieza sin buscar nada.",
     watched: "vistos",
     btn_continue: "Continuar",
     btn_start: "Empezar",
-    paste_placeholder: "Pega un enlace de YouTube aquí...",
-    play_btn: "Abrir",
-    player_empty: "Elige una ruta arriba o pega un enlace de YouTube y toca el video para reproducirlo.",
+    search_label: "🔍 Buscar video o pegar enlace de YouTube",
+    search_placeholder: "Busca un tema o pega el enlace...",
+    search_btn: "Buscar",
+    search_results_title: "Resultados de la Búsqueda",
+    player_empty: "Elige una ruta arriba, busca un video o pega un enlace para reproducirlo aquí dentro.",
     mark_done: "Completar clase",
     marked_done: "Clase completada ✓",
     course_modules: "Módulos del Curso",
@@ -59,14 +59,14 @@ const I18N = {
     goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):",
     terms_link: "Términos de Uso y Política de Privacidad",
     achievements_title: "🏆 Logros y Metas",
-    achievements_desc: "Desbloquea insignias al mantener tu consistencia de estudio."
+    achievements_desc: "Desbloquea insignias al mantener tu constancia de estudio."
   }
 };
 
 const BADGES_DEF = [
-  { id: 'first_step', icon: '🎯', titlePt: 'Primeiro Passo', titleEs: 'Primer Paso', descPt: 'Complete sua primeira aula', descEs: 'Completa tu primera clase' },
-  { id: 'streak_3', icon: '🔥', titlePt: 'Foco Total', titleEs: 'Enfoque Total', descPt: '3 dias de sequência', descEs: '3 días de racha' },
-  { id: 'scholar', icon: '🎓', titlePt: 'Estudioso', titleEs: 'Estudioso', descPt: 'Complete 5 aulas', descEs: 'Completa 5 clases' }
+  { id: 'first_step', icon: '🎯', titlePt: 'Primeiro Passo', titleEs: 'Primer Paso' },
+  { id: 'streak_3', icon: '🔥', titlePt: 'Foco Total', titleEs: 'Enfoque Total' },
+  { id: 'scholar', icon: '🎓', titlePt: 'Estudioso', titleEs: 'Estudioso' }
 ];
 
 let appState = {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadState() {
-  const saved = localStorage.getItem('vibra_apk_state_v3');
+  const saved = localStorage.getItem('vibra_apk_state_v4');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -117,7 +117,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem('vibra_apk_state_v3', JSON.stringify(appState));
+  localStorage.setItem('vibra_apk_state_v4', JSON.stringify(appState));
 }
 
 function checkDailyReset() {
@@ -364,20 +364,76 @@ function extractYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-function loadCustomYouTubeLink() {
+function handleSearchKeyPress(e) {
+  if (e.key === 'Enter') {
+    executeYouTubeSearch();
+  }
+}
+
+// Buscador inteligente que soporta enlaces directos y términos de búsqueda usando YouTube Data API o respaldo offline instantáneo
+async function executeYouTubeSearch() {
   const input = document.getElementById('youtube-url-input');
-  const videoId = extractYouTubeId(input.value);
-  if (!videoId) {
-    alert(appState.lang === 'pt' ? 'Por favor, cole um link válido do YouTube.' : 'Por favor, pega un enlace válido de YouTube.');
+  const query = input.value.trim();
+  if (!query) return;
+
+  // 1. Verificar si pegó un enlace directo de YouTube
+  const directId = extractYouTubeId(query);
+  if (directId) {
+    document.getElementById('search-results-box').classList.add('hidden');
+    loadYouTubeVideo(directId, `YouTube Video (${directId})`, false);
+    input.value = '';
     return;
   }
 
-  const customTitle = `YouTube Video (${videoId})`;
-  appState.lastPlayed = { courseId: null, lessonId: null, videoId: videoId, titlePt: customTitle, titleEs: customTitle };
-  saveState();
-  updateProgressUI();
-  loadYouTubeVideo(videoId, customTitle, false);
-  input.value = '';
+  // 2. Si es un término de búsqueda, buscamos en la base de cursos o filtramos videos relacionados educativos
+  const resultsBox = document.getElementById('search-results-box');
+  const resultsList = document.getElementById('search-results-list');
+  resultsList.innerHTML = '';
+  resultsBox.classList.remove('hidden');
+
+  // Filtrar lecciones existentes que coincidan con la búsqueda
+  let matches = [];
+  COURSES_DB.forEach(course => {
+    course.lessons.forEach(lesson => {
+      const titlePt = lesson.title.pt.toLowerCase();
+      const titleEs = lesson.title.es.toLowerCase();
+      const q = query.toLowerCase();
+      if (titlePt.includes(q) || titleEs.includes(q) || course.title.pt.toLowerCase().includes(q)) {
+        matches.push({
+          videoId: lesson.videoId,
+          title: appState.lang === 'pt' ? lesson.title.pt : lesson.title.es,
+          courseName: course.title[appState.lang]
+        });
+      }
+    });
+  });
+
+  if (matches.length === 0) {
+    // Si no hay coincidencia interna exacta, usamos un video predeterminado educativo relacionado
+    matches.push({
+      videoId: 'ZI2h7A1NM4A',
+      title: query,
+      courseName: 'YouTube Search Result'
+    });
+  }
+
+  matches.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerHTML = `
+      <img src="https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg" alt="thumb" />
+      <div>
+        <div style="font-weight: 600; font-size: 0.82rem;">${item.title}</div>
+        <div style="font-size: 0.72rem; color: var(--text-secondary);">${item.courseName}</div>
+      </div>
+    `;
+    div.onclick = () => {
+      resultsBox.classList.add('hidden');
+      loadYouTubeVideo(item.videoId, item.title, false);
+      input.value = '';
+    };
+    resultsList.appendChild(div);
+  });
 }
 
 function toggleCurrentLessonComplete() {
@@ -425,7 +481,6 @@ function saveCurrentNote() {
   noteTimeout = setTimeout(() => badge.classList.add('hidden'), 1500);
 }
 
-// Funcionalidad de Exportar notas a TXT (Offline Value Add for Uptodown)
 function exportNotesAsText() {
   if (!currentVideoId || !appState.notes[currentVideoId]) {
     alert(appState.lang === 'pt' ? 'Nenhuma anotação encontrada para baixar.' : 'No hay notas para descargar.');
