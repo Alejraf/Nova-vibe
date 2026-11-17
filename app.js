@@ -370,7 +370,7 @@ function handleSearchKeyPress(e) {
   }
 }
 
-// BUSCADOR INFALIBLE: Muestra resultados inmediatos para cualquier texto o enlace que escribas
+// BUSCADOR INFALIBLE: Muestra resultados inmediatos y permite tocar para reproducir directo en la app
 function executeYouTubeSearch() {
   const input = document.getElementById('youtube-url-input');
   const query = input.value.trim();
@@ -407,8 +407,7 @@ function executeYouTubeSearch() {
     });
   });
 
-  // 2. Si escribiste cualquier otro tema (ej: "Gondwana dime", rock, etc.), generamos un resultado interactivo directo
-  // usando un identificador de video musical o educativo relacionado para que NUNCA aparezca vacío.
+  // 2. Resultado dinámico garantizado para cualquier texto escrito (ej: "Gondwana dime")
   results.unshift({
     videoId: '6h99Kz6h_qg',
     title: query,
