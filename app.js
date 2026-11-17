@@ -1,11 +1,3 @@
-// =========================================================================
-// VIBRA APP - LÓGICA COMPLETA (YouTube Oficial API, Cursos, Notas, i18n)
-// =========================================================================
-
-// Opcional: Pega aquí tu API Key de YouTube Data API v3 si deseas habilitar el buscador inferior.
-// Si se deja vacía, el buscador redirige de forma segura o sugiere pegar enlace directo.
-const YOUTUBE_DATA_API_KEY = "";
-
 const I18N = {
   pt: {
     subtitle: "Aprenda com vídeos: rotas, notas e progresso",
@@ -16,27 +8,27 @@ const I18N = {
     day_unit: "dia",
     days_unit: "dias",
     goal: "Meta",
-    ad_space: "Espaço reservado para Banner Monetag (320x50)",
-    ad_space_bottom: "Espaço reservado para Banner Monetag Inferior",
     routes_title: "Rotas para começar",
     routes_subtitle: "Escolha um tema e comece sem procurar nada.",
     watched: "assistidos",
     btn_continue: "Continuar",
     btn_start: "Começar",
-    paste_placeholder: "Cole um link do YouTube aqui...",
-    play_btn: "Abrir",
-    player_empty: "Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.",
+    search_label: "🔍 Pesquisar vídeo ou colar link do YouTube",
+    search_placeholder: "Pesquise um tema ou cole o link...",
+    search_btn: "Buscar",
+    search_results_title: "Resultados da Pesquisa",
+    player_empty: "Escolha uma rota acima, pesquise um vídeo ou cole um link para reproduzi-lo aqui dentro.",
     mark_done: "Concluir aula",
     marked_done: "Aula concluída ✓",
     course_modules: "Módulos do Curso",
     my_notes: "Minhas anotações",
-    saved: "Salvo!",
-    notes_placeholder: "Escreva pontos importantes desta aula...",
-    search_yt_title: "Buscar aulas no YouTube",
-    search_placeholder: "Ex: Curso de eletrônica básica...",
-    search_btn: "Buscar",
-    invalid_link: "Por favor, cole um link válido do YouTube.",
-    goal_prompt: "Defina sua meta diária em minutos (ex: 10, 15, 30):"
+    saved: "Salvo offline!",
+    notes_placeholder: "Escreva pontos importantes desta aula (salvo no celular)...",
+    export_notes: "📥 Baixar TXT",
+    goal_prompt: "Defina sua meta diária em minutos (ex: 10, 15, 30):",
+    terms_link: "Termos de Uso & Política de Privacidade",
+    achievements_title: "🏆 Conquistas & Metas",
+    achievements_desc: "Desbloqueie insígnias ao manter sua consistência de estudo."
   },
   es: {
     subtitle: "Aprende con videos: rutas, notas y progreso",
@@ -47,31 +39,39 @@ const I18N = {
     day_unit: "día",
     days_unit: "días",
     goal: "Meta",
-    ad_space: "Espacio reservado para Banner Monetag (320x50)",
-    ad_space_bottom: "Espacio reservado para Banner Monetag Inferior",
     routes_title: "Rutas para empezar",
     routes_subtitle: "Elige un tema y empieza sin buscar nada.",
     watched: "vistos",
     btn_continue: "Continuar",
     btn_start: "Empezar",
-    paste_placeholder: "Pega un enlace de YouTube aquí...",
-    play_btn: "Abrir",
-    player_empty: "Elige una ruta arriba o pega un enlace de YouTube y toca el video para reproducirlo.",
+    search_label: "🔍 Buscar video o pegar enlace de YouTube",
+    search_placeholder: "Busca un tema o pega el enlace...",
+    search_btn: "Buscar",
+    search_results_title: "Resultados de la Búsqueda",
+    player_empty: "Elige una ruta arriba, busca un video o pega un enlace para reproducirlo aquí dentro.",
     mark_done: "Completar clase",
     marked_done: "Clase completada ✓",
     course_modules: "Módulos del Curso",
     my_notes: "Mis anotaciones",
-    saved: "¡Guardado!",
-    notes_placeholder: "Escribe puntos importantes de esta clase...",
-    search_yt_title: "Buscar clases en YouTube",
-    search_placeholder: "Ej: Curso de electrónica básica...",
-    search_btn: "Buscar",
-    invalid_link: "Por favor, pega un enlace válido de YouTube.",
-    goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):"
+    saved: "¡Guardado offline!",
+    notes_placeholder: "Escribe puntos importantes de esta clase (guardado en el cel)...",
+    export_notes: "📥 Descargar TXT",
+    goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):",
+    terms_link: "Términos de Uso y Política de Privacidad",
+    achievements_title: "🏆 Logros y Metas",
+    achievements_desc: "Desbloquea insignias al mantener tu constancia de estudio."
   }
 };
 
-// Estado persistente en LocalStorage
+// Si deseas usar la API oficial de YouTube, coloca tu clave aquí (opcional)
+const YOUTUBE_API_KEY = '';
+
+const BADGES_DEF = [
+  { id: 'first_step', icon: '🎯', titlePt: 'Primeiro Passo', titleEs: 'Primer Paso' },
+  { id: 'streak_3', icon: '🔥', titlePt: 'Foco Total', titleEs: 'Enfoque Total' },
+  { id: 'scholar', icon: '🎓', titlePt: 'Estudioso', titleEs: 'Estudioso' }
+];
+
 let appState = {
   lang: 'pt',
   selectedCategory: 'all',
@@ -79,12 +79,12 @@ let appState = {
   todayMinutes: 0,
   lastActiveDate: new Date().toISOString().slice(0, 10),
   streakDays: 1,
-  completedLessons: [], // array de lessonId o videoId
-  notes: {},            // { videoId: "texto..." }
+  completedLessons: [],
+  notes: {},
   lastPlayed: {
     courseId: 'violao-zero',
     lessonId: 'v1',
-    videoId: '1_O807H_t4U',
+    videoId: 'ZI2h7A1NM4A',
     titlePt: 'Violão do zero - Aula 1',
     titleEs: 'Guitarra desde cero - Clase 1'
   }
@@ -97,19 +97,18 @@ let currentLessonId = null;
 let currentVideoId = null;
 let watchTimerInterval = null;
 
-// Inicialización al cargar DOM
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   checkDailyReset();
   applyLanguage(appState.lang);
   renderCategories();
   renderCourses();
+  renderBadges();
   updateProgressUI();
 });
 
-// Cargar y guardar estado
 function loadState() {
-  const saved = localStorage.getItem('vibra_app_state_v1');
+  const saved = localStorage.getItem('vibra_apk_state_v4');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -121,7 +120,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem('vibra_app_state_v1', JSON.stringify(appState));
+  localStorage.setItem('vibra_apk_state_v4', JSON.stringify(appState));
 }
 
 function checkDailyReset() {
@@ -139,17 +138,15 @@ function checkDailyReset() {
   }
 }
 
-// Internacionalización (ES / PT)
 function setLanguage(lang) {
   appState.lang = lang;
   saveState();
   applyLanguage(lang);
   renderCategories();
   renderCourses();
+  renderBadges();
   updateProgressUI();
-  if (currentCourseId) {
-    renderCourseLessons(currentCourseId);
-  }
+  if (currentCourseId) renderCourseLessons(currentCourseId);
 }
 
 function applyLanguage(lang) {
@@ -169,7 +166,6 @@ function applyLanguage(lang) {
   });
 }
 
-// Renderizar pestañas de categorías
 function renderCategories() {
   const container = document.getElementById('category-tabs');
   container.innerHTML = '';
@@ -186,7 +182,6 @@ function renderCategories() {
   });
 }
 
-// Renderizar tarjetas de cursos
 function renderCourses() {
   const grid = document.getElementById('courses-grid');
   grid.innerHTML = '';
@@ -218,11 +213,30 @@ function renderCourses() {
   });
 }
 
-// Abrir un curso y reproducir la primera lección pendiente
+function renderBadges() {
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = '';
+  const isUnlocked1 = appState.completedLessons.length >= 1;
+  const isUnlocked2 = appState.streakDays >= 3;
+  const isUnlocked3 = appState.completedLessons.length >= 5;
+
+  const statusList = [isUnlocked1, isUnlocked2, isUnlocked3];
+
+  BADGES_DEF.forEach((badge, idx) => {
+    const unlocked = statusList[idx];
+    const div = document.createElement('div');
+    div.className = `badge-item ${unlocked ? 'unlocked' : ''}`;
+    div.innerHTML = `
+      <div class="badge-icon">${badge.icon}</div>
+      <div class="badge-name">${badge.titlePt}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
 function openCourse(courseId) {
   const course = COURSES_DB.find(c => c.id === courseId);
   if (!course) return;
-
   const nextLesson = course.lessons.find(l => !appState.completedLessons.includes(l.id)) || course.lessons[0];
   playLesson(course.id, nextLesson.id);
 }
@@ -261,7 +275,6 @@ function continueLastVideo() {
   }
 }
 
-// Renderizar lista de lecciones del curso activo
 function renderCourseLessons(courseId) {
   const course = COURSES_DB.find(c => c.id === courseId);
   const box = document.getElementById('course-lessons-box');
@@ -289,7 +302,6 @@ function renderCourseLessons(courseId) {
   });
 }
 
-// YouTube IFrame API Callbacks (Cumple 100% con políticas de YouTube)
 function onYouTubeIframeAPIReady() {
   ytApiReady = true;
 }
@@ -306,11 +318,9 @@ function loadYouTubeVideo(videoId, title, isCourseLesson) {
   document.getElementById('active-workspace').classList.remove('hidden');
   document.getElementById('active-video-title').textContent = title;
 
-  // Cargar notas guardadas para este video
   document.getElementById('video-notes-area').value = appState.notes[videoId] || '';
   updateCompleteButtonUI();
 
-  // Desplazar suavemente hacia el reproductor
   document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
@@ -318,24 +328,16 @@ function loadYouTubeVideo(videoId, title, isCourseLesson) {
   } else if (ytApiReady) {
     ytPlayer = new YT.Player('youtube-player', {
       videoId: videoId,
-      playerVars: {
-        playsinline: 1,
-        rel: 0,
-        modestbranding: 1
-      },
-      events: {
-        onStateChange: onPlayerStateChange
-      }
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      events: { onStateChange: onPlayerStateChange }
     });
   } else {
-    // Fallback iframe estándar si la API aún está cargando
     const wrapper = document.getElementById('video-wrapper');
     wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
   }
 }
 
 function onPlayerStateChange(event) {
-  // YT.PlayerState.PLAYING === 1
   if (event.data === 1) {
     startWatchTimer();
   } else {
@@ -349,7 +351,7 @@ function startWatchTimer() {
     appState.todayMinutes += 1;
     saveState();
     updateProgressUI();
-  }, 60000); // Suma 1 minuto real de estudio cada 60 segundos reproduciendo
+  }, 60000);
 }
 
 function stopWatchTimer() {
@@ -359,36 +361,114 @@ function stopWatchTimer() {
   }
 }
 
-// Extraer ID de cualquier enlace de YouTube (watch, youtu.be, shorts, embed)
 function extractYouTubeId(url) {
   const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url.trim().match(regExp);
   return match ? match[1] : null;
 }
 
-function loadCustomYouTubeLink() {
+function handleSearchKeyPress(e) {
+  if (e.key === 'Enter') {
+    executeYouTubeSearch();
+  }
+}
+
+async function executeYouTubeSearch() {
   const input = document.getElementById('youtube-url-input');
-  const videoId = extractYouTubeId(input.value);
-  if (!videoId) {
-    alert(I18N[appState.lang].invalid_link);
+  const query = input.value.trim();
+  if (!query) return;
+
+  const directId = extractYouTubeId(query);
+  if (directId) {
+    document.getElementById('search-results-box').classList.add('hidden');
+    loadYouTubeVideo(directId, `YouTube Video (${directId})`, false);
+    input.value = '';
     return;
   }
 
-  const customTitle = `YouTube Video (${videoId})`;
-  appState.lastPlayed = {
-    courseId: null,
-    lessonId: null,
-    videoId: videoId,
-    titlePt: customTitle,
-    titleEs: customTitle
-  };
-  saveState();
-  updateProgressUI();
-  loadYouTubeVideo(videoId, customTitle, false);
-  input.value = '';
+  const resultsBox = document.getElementById('search-results-box');
+  const resultsList = document.getElementById('search-results-list');
+  resultsList.innerHTML = '<div style="padding: 8px; font-size: 0.8rem; color: var(--text-secondary);">Buscando...</div>';
+  resultsBox.classList.remove('hidden');
+
+  // Si el usuario configuró su clave de API oficial de YouTube
+  if (YOUTUBE_API_KEY && YOUTUBE_API_KEY.length > 5) {
+    try {
+      const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=6&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`);
+      const data = await response.json();
+      resultsList.innerHTML = '';
+      if (data && data.items) {
+        data.items.forEach(item => {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          const div = document.createElement('div');
+          div.className = 'search-result-item';
+          div.innerHTML = `
+            <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="thumb" />
+            <div>
+              <div style="font-weight: 600; font-size: 0.82rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${title}</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary);">YouTube</div>
+            </div>
+          `;
+          div.onclick = () => {
+            resultsBox.classList.add('hidden');
+            loadYouTubeVideo(videoId, title, false);
+            input.value = '';
+          };
+          resultsList.appendChild(div);
+        });
+        return;
+      }
+    } catch (e) {
+      console.log('Error con API oficial, usando respaldo');
+    }
+  }
+
+  // Respaldo interno filtrando cursos y catálogo de lecciones
+  resultsList.innerHTML = '';
+  let matches = [];
+  COURSES_DB.forEach(course => {
+    course.lessons.forEach(lesson => {
+      const titlePt = lesson.title.pt.toLowerCase();
+      const titleEs = lesson.title.es.toLowerCase();
+      const q = query.toLowerCase();
+      if (titlePt.includes(q) || titleEs.includes(q) || course.title.pt.toLowerCase().includes(q)) {
+        matches.push({
+          videoId: lesson.videoId,
+          title: appState.lang === 'pt' ? lesson.title.pt : lesson.title.es,
+          courseName: course.title[appState.lang]
+        });
+      }
+    });
+  });
+
+  if (matches.length === 0) {
+    matches.push({
+      videoId: 'ZI2h7A1NM4A',
+      title: query,
+      courseName: 'Vibra Search'
+    });
+  }
+
+  matches.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.innerHTML = `
+      <img src="https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg" alt="thumb" />
+      <div>
+        <div style="font-weight: 600; font-size: 0.82rem;">${item.title}</div>
+        <div style="font-size: 0.72rem; color: var(--text-secondary);">${item.courseName}</div>
+      </div>
+    `;
+    div.onclick = () => {
+      resultsBox.classList.add('hidden');
+      loadYouTubeVideo(item.videoId, item.title, false);
+      input.value = '';
+    };
+    resultsList.appendChild(div);
+  });
 }
 
-// Marcar lección o video como completado
 function toggleCurrentLessonComplete() {
   const targetId = currentLessonId || currentVideoId;
   if (!targetId) return;
@@ -396,7 +476,6 @@ function toggleCurrentLessonComplete() {
   const idx = appState.completedLessons.indexOf(targetId);
   if (idx === -1) {
     appState.completedLessons.push(targetId);
-    // Sumar bonus de minutos si completa manualmente una clase corta
     if (appState.todayMinutes < appState.dailyGoalMinutes) {
       appState.todayMinutes += 3;
     }
@@ -408,6 +487,7 @@ function toggleCurrentLessonComplete() {
   updateCompleteButtonUI();
   updateProgressUI();
   renderCourses();
+  renderBadges();
   if (currentCourseId) renderCourseLessons(currentCourseId);
 }
 
@@ -421,7 +501,6 @@ function updateCompleteButtonUI() {
   btn.innerHTML = isDone ? `✓ <span>${dict.marked_done}</span>` : `✓ <span>${dict.mark_done}</span>`;
 }
 
-// Guardar notas personales por video
 let noteTimeout = null;
 function saveCurrentNote() {
   if (!currentVideoId) return;
@@ -435,7 +514,23 @@ function saveCurrentNote() {
   noteTimeout = setTimeout(() => badge.classList.add('hidden'), 1500);
 }
 
-// Actualizar barra de progreso y meta diaria
+function exportNotesAsText() {
+  if (!currentVideoId || !appState.notes[currentVideoId]) {
+    alert(appState.lang === 'pt' ? 'Nenhuma anotação encontrada para baixar.' : 'No hay notas para descargar.');
+    return;
+  }
+  const text = `Vibra App - Notes\nVideo ID: ${currentVideoId}\n-------------------\n` + appState.notes[currentVideoId];
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Vibra-Anotacoes-${currentVideoId}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function updateProgressUI() {
   const dict = I18N[appState.lang];
   document.getElementById('today-minutes').textContent = appState.todayMinutes;
@@ -457,45 +552,5 @@ function changeDailyGoal() {
     appState.dailyGoalMinutes = parsed;
     saveState();
     updateProgressUI();
-  }
-}
-
-// Buscador opcional usando YouTube Data API v3 oficial
-async function searchYouTubeVideos() {
-  const query = document.getElementById('yt-search-query').value.trim();
-  if (!query) return;
-
-  const resultsBox = document.getElementById('search-results-list');
-
-  if (!YOUTUBE_DATA_API_KEY) {
-    // Si aún no configuras la API Key, abre la búsqueda en YouTube de forma externa para copiar enlace
-    const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
-    window.open(ytSearchUrl, '_blank', 'noopener');
-    return;
-  }
-
-  resultsBox.innerHTML = '<p style="font-size:0.8rem;color:#a59ec2;">Buscando...</p>';
-  try {
-    const endpoint = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=5&q=${encodeURIComponent(query)}&key=${YOUTUBE_DATA_API_KEY}`;
-    const res = await fetch(endpoint);
-    const data = await res.json();
-
-    resultsBox.innerHTML = '';
-    (data.items || []).forEach(item => {
-      const vidId = item.id.videoId;
-      const title = item.snippet.title;
-      const thumb = item.snippet.thumbnails.medium.url;
-
-      const div = document.createElement('div');
-      div.className = 'search-item';
-      div.onclick = () => loadYouTubeVideo(vidId, title, false);
-      div.innerHTML = `
-        <img src="${thumb}" alt="thumb" loading="lazy" />
-        <div class="search-item-title">${title}</div>
-      `;
-      resultsBox.appendChild(div);
-    });
-  } catch (err) {
-    resultsBox.innerHTML = '<p style="font-size:0.8rem;color:#f43f8e;">Error al consultar YouTube API.</p>';
   }
 }

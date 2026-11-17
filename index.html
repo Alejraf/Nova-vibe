@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#140e24" />
   <title>Vibra - Aprenda com vídeos</title>
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="logo.png" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
     <!-- HEADER -->
     <header class="app-header">
       <div class="brand">
-        <div class="brand-logo">🎧</div>
+        <img src="logo.png" alt="Logo Vibra" class="brand-logo" />
         <div class="brand-info">
           <h1>Vibra</h1>
           <p data-i18n="subtitle">Aprenda com vídeos: rotas, notas e progresso</p>
@@ -54,15 +54,6 @@
       </div>
     </section>
 
-    <!-- MONETAG NON-INTRUSIVE TOP BANNER SLOT -->
-    <aside class="ad-banner-slot" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-top-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU CÓDIGO DE BANNER DE MONETAG (320x50 / Responsive) -->
-        <span class="ad-placeholder" data-i18n="ad_space">Espacio reservado para Banner Monetag (320x50)</span>
-      </div>
-    </aside>
-
     <!-- COURSES SECTION -->
     <section class="courses-section">
       <div class="section-header">
@@ -71,37 +62,41 @@
       </div>
 
       <!-- CATEGORY TABS -->
-      <div class="categories-scroll" id="category-tabs">
-        <!-- Populated dynamically by JS -->
-      </div>
+      <div class="categories-scroll" id="category-tabs"></div>
 
       <!-- COURSE CARDS GRID -->
-      <div class="courses-grid" id="courses-grid">
-        <!-- Populated dynamically by JS -->
-      </div>
+      <div class="courses-grid" id="courses-grid"></div>
     </section>
 
-    <!-- YOUTUBE LINK INPUT & PLAYER SECTION -->
+    <!-- YOUTUBE SEARCH & PLAYER SECTION -->
     <section class="card player-section" id="player-section">
+      <div class="search-header-label" data-i18n="search_label">🔍 Pesquisar vídeo ou colar link do YouTube</div>
       <div class="link-input-group">
         <input 
           type="text" 
           id="youtube-url-input" 
-          placeholder="Cole um link do YouTube aqui..." 
-          data-i18n-placeholder="paste_placeholder"
+          placeholder="Pesquise um tema ou cole o link..." 
+          data-i18n-placeholder="search_placeholder"
+          onkeypress="handleSearchKeyPress(event)"
         />
-        <button class="btn-play-link" onclick="loadCustomYouTubeLink()" data-i18n="play_btn">Abrir</button>
+        <button class="btn-play-link" onclick="executeYouTubeSearch()" data-i18n="search_btn">Buscar</button>
+      </div>
+
+      <!-- SEARCH RESULTS CONTAINER -->
+      <div id="search-results-box" class="search-results-box hidden">
+        <h4 data-i18n="search_results_title">Resultados da Pesquisa</h4>
+        <div id="search-results-list" class="search-results-list"></div>
       </div>
 
       <!-- PLAYER WRAPPER -->
       <div class="video-wrapper" id="video-wrapper">
         <div class="empty-player-msg" id="empty-player-msg">
-          <p data-i18n="player_empty">Escolha uma rota acima ou cole um link do YouTube e toque no vídeo para reproduzi-lo.</p>
+          <p data-i18n="player_empty">Escolha uma rota acima, pesquise um vídeo ou cole um link para reproduzi-lo aqui dentro.</p>
         </div>
         <div id="youtube-player"></div>
       </div>
 
-      <!-- ACTIVE COURSE LESSON LIST & NOTES (Visible when a course or video is active) -->
+      <!-- ACTIVE COURSE LESSON LIST & NOTES -->
       <div id="active-workspace" class="active-workspace hidden">
         <div class="workspace-header">
           <h3 id="active-video-title">Título del video</h3>
@@ -116,11 +111,14 @@
           <ul id="lessons-list" class="lessons-list"></ul>
         </div>
 
-        <!-- PERSONAL STUDY NOTES -->
+        <!-- PERSONAL STUDY NOTES & OFFLINE EXPORT -->
         <div class="notes-box">
           <div class="notes-header">
             <h4 data-i18n="my_notes">Minhas anotações</h4>
-            <span id="note-saved-badge" class="saved-badge hidden" data-i18n="saved">Salvo!</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span id="note-saved-badge" class="saved-badge hidden" data-i18n="saved">Salvo!</span>
+              <button class="btn-outline-pill" onclick="exportNotesAsText()" style="padding: 3px 8px; font-size: 0.72rem;" data-i18n="export_notes">📥 Baixar TXT</button>
+            </div>
           </div>
           <textarea 
             id="video-notes-area" 
@@ -133,34 +131,28 @@
       </div>
     </section>
 
-    <!-- MONETAG NON-INTRUSIVE BOTTOM BANNER SLOT -->
-    <aside class="ad-banner-slot bottom-ad" aria-label="Publicidad">
-      <div class="ad-badge">AD</div>
-      <div id="monetag-bottom-banner" class="ad-container">
-        <!-- PEGA AQUÍ TU SEGUNDO BANNER DE MONETAG (300x50 / Native Banner) -->
-        <span class="ad-placeholder" data-i18n="ad_space_bottom">Espacio reservado para Banner Monetag Inferior</span>
-      </div>
-    </aside>
-
-    <!-- OPTIONAL YOUTUBE API SEARCH DRAWER -->
-    <section class="card search-card">
-      <h3 data-i18n="search_yt_title">Buscar aulas no YouTube</h3>
-      <div class="link-input-group">
-        <input 
-          type="text" 
-          id="yt-search-query" 
-          placeholder="Ex: Curso de eletrônica básica..." 
-          data-i18n-placeholder="search_placeholder"
-        />
-        <button class="btn-play-link" onclick="searchYouTubeVideos()" data-i18n="search_btn">Buscar</button>
-      </div>
-      <div id="search-results-list" class="search-results"></div>
+    <!-- ACHIEVEMENTS & GAMIFICATION PANEL -->
+    <section class="card achievements-card">
+      <h3 data-i18n="achievements_title">🏆 Conquistas & Metas</h3>
+      <p data-i18n="achievements_desc" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">Desbloqueie insígnias ao manter sua consistência de estudo.</p>
+      <div class="badges-grid" id="badges-grid"></div>
     </section>
+
+    <!-- FOOTER WITH TERMS & PRIVACY LINK -->
+    <footer class="app-footer">
+      <a href="terminos.html" data-i18n="terms_link">Termos de Uso & Política de Privacidade</a>
+    </footer>
   </div>
 
-  <!-- YouTube IFrame API (100% Oficial y conforme a términos de YouTube) -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="courses-data.js"></script>
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+      });
+    }
+  </script>
 </body>
 </html>
