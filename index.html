@@ -68,14 +68,14 @@
       <div class="courses-grid" id="courses-grid"></div>
     </section>
 
-    <!-- YOUTUBE SEARCH & PLAYER SECTION -->
+    <!-- DEDICATED PLAYER & SEARCH SECTION (SEPARATE FROM ANY AD SPACES) -->
     <section class="card player-section" id="player-section">
-      <div class="search-header-label" data-i18n="search_label">🔍 Pesquisar ou colar link do YouTube</div>
+      <div class="search-header-label" data-i18n="search_label">🔍 Pesquisar tema ou colar link do YouTube</div>
       <div class="link-input-group">
         <input 
           type="text" 
           id="youtube-url-input" 
-          placeholder="Pesquise um tema ou cole o link do YouTube..." 
+          placeholder="Pesquise um tema ou cole o link..." 
           data-i18n-placeholder="search_placeholder"
           onkeypress="handleSearchKeyPress(event)"
         />
@@ -131,13 +131,11 @@
       </div>
     </section>
 
-    <!-- ACHIEVEMENTS & GAMIFICATION PANEL (Valor añadido para Uptodown) -->
+    <!-- ACHIEVEMENTS & GAMIFICATION PANEL -->
     <section class="card achievements-card">
       <h3 data-i18n="achievements_title">🏆 Conquistas & Metas</h3>
       <p data-i18n="achievements_desc" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">Desbloqueie insígnias ao manter sua consistência de estudo.</p>
-      <div class="badges-grid" id="badges-grid">
-        <!-- Generado dinámicamente -->
-      </div>
+      <div class="badges-grid" id="badges-grid"></div>
     </section>
 
     <!-- FOOTER WITH TERMS & PRIVACY LINK -->
