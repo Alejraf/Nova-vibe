@@ -376,7 +376,6 @@ async function executeYouTubeSearch() {
   const query = input.value.trim();
   if (!query) return;
 
-  // 1. Verificar si pegó un enlace directo de YouTube
   const directId = extractYouTubeId(query);
   if (directId) {
     document.getElementById('search-results-box').classList.add('hidden');
@@ -385,13 +384,43 @@ async function executeYouTubeSearch() {
     return;
   }
 
-  // 2. Si es un término de búsqueda, buscamos en la base de cursos o filtramos videos relacionados educativos
   const resultsBox = document.getElementById('search-results-box');
   const resultsList = document.getElementById('search-results-list');
-  resultsList.innerHTML = '';
+  resultsList.innerHTML = '<div style="padding: 8px; font-size: 0.8rem; color: var(--text-secondary);">Buscando...</div>';
   resultsBox.classList.remove('hidden');
 
-  // Filtrar lecciones existentes que coincidan con la búsqueda
+  try {
+    const response = await fetch(`https://invidious.jing.rocks/api/v1/search?q=${encodeURIComponent(query)}&type=video`, { signal: AbortSignal.timeout(5000) });
+    const data = await response.json();
+    
+    resultsList.innerHTML = '';
+    if (data && data.length > 0) {
+      data.slice(0, 6).forEach(item => {
+        const videoId = item.videoId;
+        const title = item.title;
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerHTML = `
+          <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="thumb" />
+          <div>
+            <div style="font-weight: 600; font-size: 0.82rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${title}</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary);">YouTube</div>
+          </div>
+        `;
+        div.onclick = () => {
+          resultsBox.classList.add('hidden');
+          loadYouTubeVideo(videoId, title, false);
+          input.value = '';
+        };
+        resultsList.appendChild(div);
+      });
+      return;
+    }
+  } catch (e) {
+    console.log('Usando respaldo interno');
+  }
+
+  resultsList.innerHTML = '';
   let matches = [];
   COURSES_DB.forEach(course => {
     course.lessons.forEach(lesson => {
@@ -409,11 +438,10 @@ async function executeYouTubeSearch() {
   });
 
   if (matches.length === 0) {
-    // Si no hay coincidencia interna exacta, usamos un video predeterminado educativo relacionado
     matches.push({
       videoId: 'ZI2h7A1NM4A',
       title: query,
-      courseName: 'YouTube Search Result'
+      courseName: 'Vibra Search'
     });
   }
 
