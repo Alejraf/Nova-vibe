@@ -1,10 +1,3 @@
-// =========================================================================
-// VIBRA APP - LÓGICA COMPLETA (YouTube Oficial API, Cursos, Notas, i18n)
-// =========================================================================
-
-// Opcional: Pega aquí tu API Key de YouTube Data API v3 si deseas habilitar el buscador inferior.
-const YOUTUBE_DATA_API_KEY = "AIzaSyC7jJKXG_GosP56S2xvQk-2AKp9rOoec0I";
-
 const I18N = {
   pt: {
     subtitle: "Aprenda com vídeos: rotas, notas e progresso",
@@ -29,14 +22,13 @@ const I18N = {
     marked_done: "Aula concluída ✓",
     course_modules: "Módulos do Curso",
     my_notes: "Minhas anotações",
-    saved: "Salvo!",
-    notes_placeholder: "Escreva pontos importantes desta aula...",
-    search_yt_title: "Buscar aulas no YouTube",
-    search_placeholder: "Ex: Curso de eletrônica básica...",
-    search_btn: "Buscar",
-    invalid_link: "Por favor, cole um link válido do YouTube.",
+    saved: "Salvo offline!",
+    notes_placeholder: "Escreva pontos importantes desta aula (salvo no celular)...",
+    export_notes: "📥 Baixar TXT",
     goal_prompt: "Defina sua meta diária em minutos (ex: 10, 15, 30):",
-    terms_link: "Termos de Uso & Política de Privacidade"
+    terms_link: "Termos de Uso & Política de Privacidade",
+    achievements_title: "🏆 Conquistas & Metas",
+    achievements_desc: "Desbloqueie insígnias ao manter sua consistência de estudo."
   },
   es: {
     subtitle: "Aprende con videos: rutas, notas y progreso",
@@ -61,18 +53,22 @@ const I18N = {
     marked_done: "Clase completada ✓",
     course_modules: "Módulos del Curso",
     my_notes: "Mis anotaciones",
-    saved: "¡Guardado!",
-    notes_placeholder: "Escribe puntos importantes de esta clase...",
-    search_yt_title: "Buscar clases en YouTube",
-    search_placeholder: "Ej: Curso de electrónica básica...",
-    search_btn: "Buscar",
-    invalid_link: "Por favor, pega un enlace válido de YouTube.",
+    saved: "¡Guardado offline!",
+    notes_placeholder: "Escribe puntos importantes de esta clase (guardado en el cel)...",
+    export_notes: "📥 Descargar TXT",
     goal_prompt: "Define tu meta diaria en minutos (ej: 10, 15, 30):",
-    terms_link: "Términos de Uso y Política de Privacidad"
+    terms_link: "Términos de Uso y Política de Privacidad",
+    achievements_title: "🏆 Logros y Metas",
+    achievements_desc: "Desbloquea insignias al mantener tu consistencia de estudio."
   }
 };
 
-// Estado persistente en LocalStorage
+const BADGES_DEF = [
+  { id: 'first_step', icon: '🎯', titlePt: 'Primeiro Passo', titleEs: 'Primer Paso', descPt: 'Complete sua primeira aula', descEs: 'Completa tu primera clase' },
+  { id: 'streak_3', icon: '🔥', titlePt: 'Foco Total', titleEs: 'Enfoque Total', descPt: '3 dias de sequência', descEs: '3 días de racha' },
+  { id: 'scholar', icon: '🎓', titlePt: 'Estudioso', titleEs: 'Estudioso', descPt: 'Complete 5 aulas', descEs: 'Completa 5 clases' }
+];
+
 let appState = {
   lang: 'pt',
   selectedCategory: 'all',
@@ -104,11 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
   applyLanguage(appState.lang);
   renderCategories();
   renderCourses();
+  renderBadges();
   updateProgressUI();
 });
 
 function loadState() {
-  const saved = localStorage.getItem('vibra_app_state_v2');
+  const saved = localStorage.getItem('vibra_apk_state_v3');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -120,7 +117,7 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem('vibra_app_state_v2', JSON.stringify(appState));
+  localStorage.setItem('vibra_apk_state_v3', JSON.stringify(appState));
 }
 
 function checkDailyReset() {
@@ -144,10 +141,9 @@ function setLanguage(lang) {
   applyLanguage(lang);
   renderCategories();
   renderCourses();
+  renderBadges();
   updateProgressUI();
-  if (currentCourseId) {
-    renderCourseLessons(currentCourseId);
-  }
+  if (currentCourseId) renderCourseLessons(currentCourseId);
 }
 
 function applyLanguage(lang) {
@@ -214,10 +210,30 @@ function renderCourses() {
   });
 }
 
+function renderBadges() {
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = '';
+  const isUnlocked1 = appState.completedLessons.length >= 1;
+  const isUnlocked2 = appState.streakDays >= 3;
+  const isUnlocked3 = appState.completedLessons.length >= 5;
+
+  const statusList = [isUnlocked1, isUnlocked2, isUnlocked3];
+
+  BADGES_DEF.forEach((badge, idx) => {
+    const unlocked = statusList[idx];
+    const div = document.createElement('div');
+    div.className = `badge-item ${unlocked ? 'unlocked' : ''}`;
+    div.innerHTML = `
+      <div class="badge-icon">${badge.icon}</div>
+      <div class="badge-name">${badge.titlePt}</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
 function openCourse(courseId) {
   const course = COURSES_DB.find(c => c.id === courseId);
   if (!course) return;
-
   const nextLesson = course.lessons.find(l => !appState.completedLessons.includes(l.id)) || course.lessons[0];
   playLesson(course.id, nextLesson.id);
 }
@@ -309,14 +325,8 @@ function loadYouTubeVideo(videoId, title, isCourseLesson) {
   } else if (ytApiReady) {
     ytPlayer = new YT.Player('youtube-player', {
       videoId: videoId,
-      playerVars: {
-        playsinline: 1,
-        rel: 0,
-        modestbranding: 1
-      },
-      events: {
-        onStateChange: onPlayerStateChange
-      }
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      events: { onStateChange: onPlayerStateChange }
     });
   } else {
     const wrapper = document.getElementById('video-wrapper');
@@ -358,18 +368,12 @@ function loadCustomYouTubeLink() {
   const input = document.getElementById('youtube-url-input');
   const videoId = extractYouTubeId(input.value);
   if (!videoId) {
-    alert(I18N[appState.lang].invalid_link);
+    alert(appState.lang === 'pt' ? 'Por favor, cole um link válido do YouTube.' : 'Por favor, pega un enlace válido de YouTube.');
     return;
   }
 
   const customTitle = `YouTube Video (${videoId})`;
-  appState.lastPlayed = {
-    courseId: null,
-    lessonId: null,
-    videoId: videoId,
-    titlePt: customTitle,
-    titleEs: customTitle
-  };
+  appState.lastPlayed = { courseId: null, lessonId: null, videoId: videoId, titlePt: customTitle, titleEs: customTitle };
   saveState();
   updateProgressUI();
   loadYouTubeVideo(videoId, customTitle, false);
@@ -394,6 +398,7 @@ function toggleCurrentLessonComplete() {
   updateCompleteButtonUI();
   updateProgressUI();
   renderCourses();
+  renderBadges();
   if (currentCourseId) renderCourseLessons(currentCourseId);
 }
 
@@ -420,6 +425,24 @@ function saveCurrentNote() {
   noteTimeout = setTimeout(() => badge.classList.add('hidden'), 1500);
 }
 
+// Funcionalidad de Exportar notas a TXT (Offline Value Add for Uptodown)
+function exportNotesAsText() {
+  if (!currentVideoId || !appState.notes[currentVideoId]) {
+    alert(appState.lang === 'pt' ? 'Nenhuma anotação encontrada para baixar.' : 'No hay notas para descargar.');
+    return;
+  }
+  const text = `Vibra App - Notes\nVideo ID: ${currentVideoId}\n-------------------\n` + appState.notes[currentVideoId];
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Vibra-Anotacoes-${currentVideoId}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function updateProgressUI() {
   const dict = I18N[appState.lang];
   document.getElementById('today-minutes').textContent = appState.todayMinutes;
@@ -441,43 +464,5 @@ function changeDailyGoal() {
     appState.dailyGoalMinutes = parsed;
     saveState();
     updateProgressUI();
-  }
-}
-
-async function searchYouTubeVideos() {
-  const query = document.getElementById('yt-search-query').value.trim();
-  if (!query) return;
-
-  const resultsBox = document.getElementById('search-results-list');
-
-  if (!YOUTUBE_DATA_API_KEY) {
-    const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
-    window.open(ytSearchUrl, '_blank', 'noopener');
-    return;
-  }
-
-  resultsBox.innerHTML = '<p style="font-size:0.8rem;color:#a59ec2;">Buscando...</p>';
-  try {
-    const endpoint = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=5&q=${encodeURIComponent(query)}&key=${YOUTUBE_DATA_API_KEY}`;
-    const res = await fetch(endpoint);
-    const data = await res.json();
-
-    resultsBox.innerHTML = '';
-    (data.items || []).forEach(item => {
-      const vidId = item.id.videoId;
-      const title = item.snippet.title;
-      const thumb = item.snippet.thumbnails.medium.url;
-
-      const div = document.createElement('div');
-      div.className = 'search-item';
-      div.onclick = () => loadYouTubeVideo(vidId, title, false);
-      div.innerHTML = `
-        <img src="${thumb}" alt="thumb" loading="lazy" />
-        <div class="search-item-title">${title}</div>
-      `;
-      resultsBox.appendChild(div);
-    });
-  } catch (err) {
-    resultsBox.innerHTML = '<p style="font-size:0.8rem;color:#f43f8e;">Error al consultar YouTube API.</p>';
   }
 }

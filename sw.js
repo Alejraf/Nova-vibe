@@ -1,6 +1,22 @@
-self.options = {
-    "domain": "5gvci.com",
-    "zoneId": 12280045
-}
-self.lary = ""
-importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
+const CACHE_NAME = 'vibra-apk-v1';
+const ASSETS = [
+  './index.html',
+  './styles.css',
+  './app.js',
+  './courses-data.js',
+  './terminos.html',
+  './logo.png',
+  './manifest.json'
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(response => response || fetch(e.request))
+  );
+});

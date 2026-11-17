@@ -1,5 +1,3 @@
-// Base de datos de cursos reales en Portugués / Español (100% activos y embeddables)
-
 const CATEGORIES = [
   { id: 'all', pt: 'Tudo', es: 'Todo' },
   { id: 'musica', pt: 'Música', es: 'Música' },
@@ -21,15 +19,12 @@ const COURSES_DB = [
     category: 'musica',
     icon: '🎸',
     title: { pt: 'Violão do zero', es: 'Guitarra desde cero' },
-    desc: {
-      pt: 'Da primeira aula às primeiras cifras e batidas no violão.',
-      es: 'Desde la primera clase hasta los primeros acordes y ritmos.'
-    },
+    desc: { pt: 'Da primeira aula às primeiras cifras e batidas.', es: 'Desde la primera clase hasta los primeros acordes.' },
     lessons: [
-      { id: 'v1', videoId: 'ZI2h7A1NM4A', title: { pt: 'Aula 1: Violão Iniciante Nível Zero', es: 'Clase 1: Guitarra Principiante Nivel Cero' }, duration: 12 },
+      { id: 'v1', videoId: 'ZI2h7A1NM4A', title: { pt: 'Aula 1: Violão Iniciante Nível Zero', es: 'Clase 1: Guitarra Principiante' }, duration: 12 },
       { id: 'v2', videoId: '7pXy-KsoX08', title: { pt: 'Aula 2: Como afinar o violão', es: 'Clase 2: Cómo afinar la guitarra' }, duration: 9 },
-      { id: 'v3', videoId: '2q2DzggAv2Y', title: { pt: 'Aula 3: Como ler cifras no violão', es: 'Clase 3: Cómo leer cifrados en guitarra' }, duration: 11 },
-      { id: 'v4', videoId: '2TD3u30oQtM', title: { pt: 'Aula 4: Primeiros acordes passo a passo', es: 'Clase 4: Primeros acordes paso a paso' }, duration: 14 }
+      { id: 'v3', videoId: '2q2DzggAv2Y', title: { pt: 'Aula 3: Como ler cifras', es: 'Clase 3: Cómo leer cifrados' }, duration: 11 },
+      { id: 'v4', videoId: '2TD3u30oQtM', title: { pt: 'Aula 4: Primeiros acordes', es: 'Clase 4: Primeros acordes' }, duration: 14 }
     ]
   },
   {
@@ -37,15 +32,11 @@ const COURSES_DB = [
     category: 'idiomas',
     icon: '🗣️',
     title: { pt: 'Inglês do zero', es: 'Inglés desde cero' },
-    desc: {
-      pt: 'Suas primeiras aulas de inglês explicadas passo a passo.',
-      es: 'Tus primeras clases de inglés explicadas paso a paso.'
-    },
+    desc: { pt: 'Suas primeiras aulas de inglês explicadas passo a passo.', es: 'Tus primeras clases de inglés explicadas paso a paso.' },
     lessons: [
-      { id: 'i1', videoId: 'yaxRsYu1yUA', title: { pt: 'Aula 1: Inglês para iniciantes Nível 1', es: 'Clase 1: Inglés para principiantes Nivel 1' }, duration: 15 },
-      { id: 'i2', videoId: 'fVZhgNAXMd0', title: { pt: 'Aula 2: Vocabulário e pronúncia básica', es: 'Clase 2: Vocabulario y pronunciación básica' }, duration: 14 },
-      { id: 'i3', videoId: 'I3ZNPP5hE-M', title: { pt: 'Aula 3: Frases essenciais do dia a dia', es: 'Clase 3: Frases esenciales del día a día' }, duration: 16 },
-      { id: 'i4', videoId: 'LdRwSzhyq6s', title: { pt: 'Aula 4: Conversação e compreensão', es: 'Clase 4: Conversación y comprensión' }, duration: 18 }
+      { id: 'i1', videoId: 'yaxRsYu1yUA', title: { pt: 'Aula 1: Iniciantes Nível 1', es: 'Clase 1: Principiantes Nivel 1' }, duration: 15 },
+      { id: 'i2', videoId: 'fVZhgNAXMd0', title: { pt: 'Aula 2: Vocabulário e pronúncia', es: 'Clase 2: Vocabulario y pronunciación' }, duration: 14 },
+      { id: 'i3', videoId: 'I3ZNPP5hE-M', title: { pt: 'Aula 3: Frases essenciais', es: 'Clase 3: Frases esenciales' }, duration: 16 }
     ]
   },
   {
@@ -53,29 +44,21 @@ const COURSES_DB = [
     category: 'fitness',
     icon: '💪',
     title: { pt: 'Treino Completo em Casa', es: 'Entrenamiento en Casa' },
-    desc: {
-      pt: 'Exercícios em casa para iniciantes sem precisar de equipamentos.',
-      es: 'Ejercicios en casa para principiantes sin necesidad de equipo.'
-    },
+    desc: { pt: 'Exercícios em casa para força e resistência.', es: 'Ejercicios en casa para fuerza y resistencia.' },
     lessons: [
-      { id: 'f1', videoId: 'cSkf5WVGm1c', title: { pt: 'Aula 1: Treino completo para iniciantes', es: 'Clase 1: Entrenamiento completo principiantes' }, duration: 15 },
-      { id: 'f2', videoId: 'kWcuMsv8TZg', title: { pt: 'Aula 2: Cardio e resistência em casa', es: 'Clase 2: Cardio y resistencia en casa' }, duration: 18 },
-      { id: 'f3', videoId: 'd2UysV_BN5U', title: { pt: 'Aula 3: Alongamento e postura sem acessórios', es: 'Clase 3: Estiramiento y postura sin accesorios' }, duration: 12 }
+      { id: 'f1', videoId: 'cSkf5WVGm1c', title: { pt: 'Aula 1: Treino completo iniciantes', es: 'Clase 1: Entrenamiento completo' }, duration: 15 },
+      { id: 'f2', videoId: 'kWcuMsv8TZg', title: { pt: 'Aula 2: Cardio em casa', es: 'Clase 2: Cardio en casa' }, duration: 18 }
     ]
   },
   {
     id: 'culinaria-pratica',
     category: 'culinaria',
     icon: '🍳',
-    title: { pt: 'Culinária Básica & Técnicas', es: 'Cocina Básica y Técnicas' },
-    desc: {
-      pt: 'Cortes, utensílios, preparo de arroz soltinho e bases na cozinha.',
-      es: 'Cortes, utensilios, preparación de arroz y bases en la cocina.'
-    },
+    title: { pt: 'Culinária Básica', es: 'Cocina Básica' },
+    desc: { pt: 'Técnicas de corte e pratos essenciais.', es: 'Técnicas de corte y platos esenciales.' },
     lessons: [
-      { id: 'c1', videoId: 'JBy8FVh6x7I', title: { pt: 'Aula 1: Tipos de cortes e utensílios', es: 'Clase 1: Tipos de cortes y utensilios' }, duration: 11 },
-      { id: 'c2', videoId: 'SeDXen3LqrA', title: { pt: 'Aula 2: Como fazer arroz soltinho perfeito', es: 'Clase 2: Cómo hacer arroz suelto perfecto' }, duration: 10 },
-      { id: 'c3', videoId: 'NW81R-rSjtE', title: { pt: 'Aula 3: Fundamentos de confeitaria e massas', es: 'Clase 3: Fundamentos de repostería y masas' }, duration: 14 }
+      { id: 'c1', videoId: 'JBy8FVh6x7I', title: { pt: 'Aula 1: Cortes e utensílios', es: 'Clase 1: Cortes y utensilios' }, duration: 11 },
+      { id: 'c2', videoId: 'SeDXen3LqrA', title: { pt: 'Aula 2: Arroz soltinho perfeito', es: 'Clase 2: Arroz perfecto' }, duration: 10 }
     ]
   },
   {
@@ -83,14 +66,10 @@ const COURSES_DB = [
     category: 'eletricidade',
     icon: '⚡',
     title: { pt: 'Eletricidade Residencial', es: 'Electricidad Residencial' },
-    desc: {
-      pt: 'Tensão, corrente, aterramento e instalações elétricas residenciais.',
-      es: 'Voltaje, corriente, puesta a tierra e instalaciones residenciales.'
-    },
+    desc: { pt: 'Instalações e normas de segurança.', es: 'Instalaciones y normas de seguridad.' },
     lessons: [
-      { id: 'el1', videoId: 'kLUt4ZAJuPk', title: { pt: 'Aula 1: Tensão, corrente e resistência', es: 'Clase 1: Voltaje, corriente y resistencia' }, duration: 14 },
-      { id: 'el2', videoId: 'tiCJVJ7Mb0U', title: { pt: 'Aula 2: O que é aterramento e normas NR10', es: 'Clase 2: Qué es puesta a tierra y seguridad' }, duration: 15 },
-      { id: 'el3', videoId: 'Q6JvbT-oT4A', title: { pt: 'Aula 3: Instalações elétricas de baixa tensão', es: 'Clase 3: Instalaciones eléctricas de baja tensión' }, duration: 16 }
+      { id: 'el1', videoId: 'kLUt4ZAJuPk', title: { pt: 'Aula 1: Tensão e corrente', es: 'Clase 1: Voltaje y corriente' }, duration: 14 },
+      { id: 'el2', videoId: 'tiCJVJ7Mb0U', title: { pt: 'Aula 2: Aterramento e segurança', es: 'Clase 2: Puesta a tierra' }, duration: 15 }
     ]
   },
   {
@@ -98,14 +77,10 @@ const COURSES_DB = [
     category: 'eletronica',
     icon: '🔌',
     title: { pt: 'Eletrônica e Soldagem', es: 'Electrónica y Soldadura' },
-    desc: {
-      pt: 'Aprenda a soldar placas eletrônicas com estanho e fluxo do zero.',
-      es: 'Aprende a soldar placas electrónicas con estaño y flux desde cero.'
-    },
+    desc: { pt: 'Solda com estanho e componentes.', es: 'Soldadura con estaño y componentes.' },
     lessons: [
-      { id: 'et1', videoId: 'Ev27UDH7orM', title: { pt: 'Aula 1: Como soldar placas eletrônicas do zero', es: 'Clase 1: Cómo soldar placas electrónicas desde cero' }, duration: 13 },
-      { id: 'et2', videoId: '8BpE065j_4k', title: { pt: 'Aula 2: Solda eletrônica perfeita com fluxo', es: 'Clase 2: Soldadura electrónica perfecta con flux' }, duration: 11 },
-      { id: 'et3', videoId: 'fl5-JXiBzug', title: { pt: 'Aula 3: Prática de soldagem em componentes', es: 'Clase 3: Práctica de soldadura en componentes' }, duration: 18 }
+      { id: 'et1', videoId: 'Ev27UDH7orM', title: { pt: 'Aula 1: Como soldar placas', es: 'Clase 1: Cómo soldar placas' }, duration: 13 },
+      { id: 'et2', videoId: '8BpE065j_4k', title: { pt: 'Aula 2: Solda com fluxo', es: 'Clase 2: Soldadura con flux' }, duration: 11 }
     ]
   },
   {
@@ -113,14 +88,10 @@ const COURSES_DB = [
     category: 'bijuteria',
     icon: '📿',
     title: { pt: 'Bijuteria e Acessórios', es: 'Bisutería Artesanal' },
-    desc: {
-      pt: 'Ferramentas, montagem de colares, pulseiras e acabamentos profissionais.',
-      es: 'Herramientas, armado de collares, pulseras y acabados profesionales.'
-    },
+    desc: { pt: 'Crie pulseiras e colares para vender.', es: 'Crea pulseras y collares para vender.' },
     lessons: [
-      { id: 'bj1', videoId: 'oAttYMp0bfE', title: { pt: 'Aula 1: Ferramentas e materiais básicos', es: 'Clase 1: Herramientas y materiales básicos' }, duration: 14 },
-      { id: 'bj2', videoId: 's4ljLBbT1LQ', title: { pt: 'Aula 2: Pulseiras elásticas e de fecho', es: 'Clase 2: Pulseras elásticas y con broche' }, duration: 15 },
-      { id: 'bj3', videoId: 'v1vIcVIHlf0', title: { pt: 'Aula 3: Acabamentos perfeitos em conjuntos', es: 'Clase 3: Acabados perfectos en conjuntos' }, duration: 12 }
+      { id: 'bj1', videoId: 'oAttYMp0bfE', title: { pt: 'Aula 1: Materiais básicos', es: 'Clase 1: Materiales básicos' }, duration: 14 },
+      { id: 'bj2', videoId: 's4ljLBbT1LQ', title: { pt: 'Aula 2: Pulseiras elásticas', es: 'Clase 2: Pulseras elásticas' }, duration: 15 }
     ]
   },
   {
@@ -128,58 +99,43 @@ const COURSES_DB = [
     category: 'mecanica',
     icon: '🔧',
     title: { pt: 'Mecânica Básica de Motos', es: 'Mecánica Básica de Motos' },
-    desc: {
-      pt: 'Fundamentos do motor, elétrica básica e manutenção preventiva.',
-      es: 'Fundamentos del motor, electricidad básica y mantenimiento.'
-    },
+    desc: { pt: 'Manutenção preventiva e motor.', es: 'Mantenimiento preventivo y motor.' },
     lessons: [
-      { id: 'mc1', videoId: 'pZbeW2MXZsc', title: { pt: 'Aula 1: Introdução à mecânica de motos', es: 'Clase 1: Introducción a la mecánica de motos' }, duration: 20 },
-      { id: 'mc2', videoId: 'BcymT9N6wKE', title: { pt: 'Aula 2: Mecânica, elétrica e injeção', es: 'Clase 2: Mecánica, electricidad e inyección' }, duration: 18 },
-      { id: 'mc3', videoId: 'qTDA-Ffa99c', title: { pt: 'Aula 3: Componentes elétricos na prática', es: 'Clase 3: Componentes eléctricos en la práctica' }, duration: 15 }
+      { id: 'mc1', videoId: 'pZbeW2MXZsc', title: { pt: 'Aula 1: Introdução à mecânica', es: 'Clase 1: Introducción a la mecánica' }, duration: 20 },
+      { id: 'mc2', videoId: 'BcymT9N6wKE', title: { pt: 'Aula 2: Motor e injeção', es: 'Clase 2: Motor e inyección' }, duration: 18 }
     ]
   },
   {
     id: 'barbearia-profissional',
     category: 'barbearia',
     icon: '💈',
-    title: { pt: 'Barbearia & Corte Degradê', es: 'Barbería y Corte Degradado' },
-    desc: {
-      pt: 'Técnicas de máquina, tesoura e passo a passo para corte degradê.',
-      es: 'Técnicas de máquina, tijera y paso a paso para corte degradado.'
-    },
+    title: { pt: 'Barbearia & Degradê', es: 'Barbería y Degradado' },
+    desc: { pt: 'Cortes modernos e máquina.', es: 'Cortes modernos y máquina.' },
     lessons: [
-      { id: 'br1', videoId: 'SxLp6YxIzwc', title: { pt: 'Aula 1: Curso de barbeiro começando do zero', es: 'Clase 1: Curso de barbero desde cero' }, duration: 14 },
-      { id: 'br2', videoId: 'hYF6NVAjlnI', title: { pt: 'Aula 2: Corte degradê passo a passo', es: 'Clase 2: Corte degradado paso a paso' }, duration: 16 },
-      { id: 'br3', videoId: 'dJutW5FXmck', title: { pt: 'Aula 3: Técnicas profissionais de corte', es: 'Clase 3: Técnicas profesionales de corte' }, duration: 19 }
+      { id: 'br1', videoId: 'SxLp6YxIzwc', title: { pt: 'Aula 1: Curso de barbeiro', es: 'Clase 1: Curso de barbero' }, duration: 14 },
+      { id: 'br2', videoId: 'hYF6NVAjlnI', title: { pt: 'Aula 2: Corte degradê passo a passo', es: 'Clase 2: Degradado paso a paso' }, duration: 16 }
     ]
   },
   {
     id: 'botanica-cultivo',
     category: 'botanica',
     icon: '🌿',
-    title: { pt: 'Botânica, Horta e Jardinagem', es: 'Botánica, Huerto y Jardinería' },
-    desc: {
-      pt: 'Cultivo orgânico, preparo do solo e cuidados essenciais com plantas.',
-      es: 'Cultivo orgánico, preparación del suelo y cuidados de plantas.'
-    },
+    title: { pt: 'Botânica e Horta', es: 'Botánica y Huerto' },
+    desc: { pt: 'Cultivo orgânico em casa.', es: 'Cultivo orgánico en casa.' },
     lessons: [
-      { id: 'bt1', videoId: 'Y8a9CCSdZBY', title: { pt: 'Aula 1: Jardinagem sem mistérios', es: 'Clase 1: Jardinería sin misterios' }, duration: 12 },
-      { id: 'bt2', videoId: '4viKW6y5Gl0', title: { pt: 'Aula 2: Começando o cultivo orgânico certo', es: 'Clase 2: Empezando el cultivo orgánico' }, duration: 15 }
+      { id: 'bt1', videoId: 'Y8a9CCSdZBY', title: { pt: 'Aula 1: Jardinagem básica', es: 'Clase 1: Jardinería básica' }, duration: 12 },
+      { id: 'bt2', videoId: '4viKW6y5Gl0', title: { pt: 'Aula 2: Cultivo orgânico', es: 'Clase 2: Cultivo orgánico' }, duration: 15 }
     ]
   },
   {
     id: 'informatica-programacao',
     category: 'informatica',
     icon: '💻',
-    title: { pt: 'Informática & Criação Web', es: 'Informática y Creación Web' },
-    desc: {
-      pt: 'Estrutura HTML, estilos CSS e responsividade na prática.',
-      es: 'Estructura HTML, estilos CSS y diseño responsivo en la práctica.'
-    },
+    title: { pt: 'Criação Web', es: 'Creación Web' },
+    desc: { pt: 'HTML e CSS do zero.', es: 'HTML y CSS desde cero.' },
     lessons: [
-      { id: 'in1', videoId: '0Pm6ex5HDGY', title: { pt: 'Aula 1: Estrutura básica e comandos HTML', es: 'Clase 1: Estructura básica y comandos HTML' }, duration: 14 },
-      { id: 'in2', videoId: 'ER2F3xJnWpg', title: { pt: 'Aula 2: Fundamentos de HTML e páginas web', es: 'Clase 2: Fundamentos de HTML y páginas web' }, duration: 16 },
-      { id: 'in3', videoId: 'rAdHLNBTCgs', title: { pt: 'Aula 3: Responsividade na prática com CSS', es: 'Clase 3: Diseño responsivo en la práctica' }, duration: 18 }
+      { id: 'in1', videoId: '0Pm6ex5HDGY', title: { pt: 'Aula 1: HTML básico', es: 'Clase 1: HTML básico' }, duration: 14 },
+      { id: 'in2', videoId: 'ER2F3xJnWpg', title: { pt: 'Aula 2: Páginas web', es: 'Clase 2: Páginas web' }, duration: 16 }
     ]
   }
 ];
